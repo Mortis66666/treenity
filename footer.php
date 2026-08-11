@@ -1,2 +1,3 @@
-<?php
-// TODO: common footer
+<div class="footer" id="footer">
+    <div>Fake footer lol</div>
+</div>

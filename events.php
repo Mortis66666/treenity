@@ -5,13 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <?php include("global.php"); ?>
+
+
 </head>
 
 <body>
-    <h1>HELLO</h1>
 
-    <a href="login.php">Login</a>
-    <a href="events.php">Events</a>
+    <?php include("header.php"); ?>
+    <?php include("footer.php"); ?>
+
+
+    Test
+
 </body>
 
 </html>

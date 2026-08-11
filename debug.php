@@ -1,5 +1,6 @@
 <?php
-include("javascript.php");
+include_once("javascript.php");
+
 function debug_log($data)
 {
     $output = $data;
