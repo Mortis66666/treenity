@@ -10,16 +10,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     debug_log("Username: $username");
     debug_log("Password: $password");
 
-    $sql = "SELECT id_pengguna FROM pengguna WHERE nama_pengguna=? AND kata_laluan=?";
+    $sql = "SELECT user_id, role FROM users WHERE username=? AND password=?";
     $result = $conn->execute_query($sql, [$username, $password]);
-    // $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $_SESSION['user_id'] = $row['id_pengguna'];
+        $_SESSION['user_id'] = $row['user_id'];
+        $_SESSION['role'] = $row['role'];
         debug_log("Login successful");
 
-        execute("window.location.href='home.php'");
+        switch ($row['role']) {
+            case 'ADMIN':
+                header('Location: adminDashboard.php');
+                break;
+            case 'ORGANIZER':
+                header('Location: organizerDashboard.php');
+                break;
+            case 'USER':
+                header('Location: userDashboard.php');
+                break;
+        }
     } else {
         debug_log("Login failed");
         $_SESSION['error'] = "Login failed";
