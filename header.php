@@ -1,3 +1,3 @@
-<div class="header" id="header">
+<header class="header" id="header">
     <div>Fake header lol</div>
-</div>
+</header>

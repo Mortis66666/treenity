@@ -1,0 +1,67 @@
+.leaderboard {
+    padding: 20px 15px;
+}
+
+th,
+td {
+    padding: 12px 10px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-top: 25px;
+}
+
+.pagination button {
+    width: 64px;
+    height: 64px;
+
+    border: none;
+    border-right: 1px solid #222;
+
+    background: #181a1b;
+    color: #ddd;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.pagination button:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.pagination button:last-child {
+    border-radius: 0 4px 4px 0;
+    border: none;
+}
+
+/* Current page */
+
+.pagination button.active {
+    background: #101214;
+    color: white;
+}
+
+.pagination button.active {
+    background: #101214;
+    color: white;
+}
+
+/* ... */
+
+.pagination .ellipsis {
+    width: 64px;
+    height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #ddd;
+    font-weight: bold;
+}

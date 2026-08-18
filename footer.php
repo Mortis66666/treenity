@@ -1,3 +1,3 @@
-<div class="footer" id="footer">
+<footer class="footer" id="footer">
     <div>Fake footer lol</div>
-</div>
+</footer>
