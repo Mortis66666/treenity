@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us</title>
+    <title>User Dashboard</title>
 
     <?php include("global.php"); ?>
 </head>
@@ -14,10 +14,10 @@
 
     <main class="content">
         <div class="page-title-bar">
-            <h1>About Us</h1>
+            <h1>User Dashboard</h1>
         </div>
 
-        <p>son 😭😭😭</p>
+        USER
     </main>
 
     <?php include("footer.php"); ?>
