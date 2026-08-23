@@ -19,17 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['role'] = $row['role'];
         debug_log("Login successful");
 
-        switch ($row['role']) {
-            case 'ADMIN':
-                header('Location: adminDashboard.php');
-                break;
-            case 'ORGANIZER':
-                header('Location: organizerDashboard.php');
-                break;
-            case 'USER':
-                header('Location: userDashboard.php');
-                break;
-        }
+        header("Location: dashboard.php");
     } else {
         debug_log("Login failed");
         $_SESSION['error'] = "Login failed";
