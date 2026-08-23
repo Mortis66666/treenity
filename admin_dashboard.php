@@ -1,3 +1,11 @@
+<?php
+session_start();
+
+include("database.php");
+include("check_user.php");
+include("pagination.php");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,7 +25,7 @@
             <h1>Admin Dashboard</h1>
         </div>
 
-        ADMIN
+        <a href="users.php">users</a>
     </main>
 
     <?php include("footer.php"); ?>

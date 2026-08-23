@@ -24,9 +24,9 @@ $result = $conn->execute_query($query);
     <?php include("header.php"); ?>
 
     <main class="content events-page">
-        <div class="events-heading">
-            <p class="eyebrow">Discover something new</p>
+        <div class="page-title-bar">
             <h1>Upcoming events</h1>
+            <h1>TODO: sort by: Upcoming | Ongoing | Past</h1>
         </div>
 
         <section class="event-list" aria-label="Available events">
