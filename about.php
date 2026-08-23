@@ -1,14 +1,29 @@
+<?php
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Base</title>
+
+    <link rel="stylesheet" href="styles/events.css">
+    <?php include("global.php"); ?>
+
+
 </head>
 
 <body>
-    about
+    <?php include("header.php"); ?>
+
+    <main class="content">
+
+    </main>
+
+    <?php include("footer.php"); ?>
 </body>
 
 </html>

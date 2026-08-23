@@ -12,10 +12,10 @@ $result = $conn->execute_query($query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base</title>
+    <title>Events</title>
 
-    <link rel="stylesheet" href="styles/base.css">
     <?php include("global.php"); ?>
+    <link rel="stylesheet" href="styles/events.css">
 
 
 </head>
