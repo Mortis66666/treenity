@@ -1,8 +1,6 @@
 <?php
-session_start();
-
-include("database.php");
-include("check_user.php");
+include_once("database.php");
+include_once("check_user.php");
 include("pagination.php");
 ?>
 

@@ -1,5 +1,5 @@
 <?php
-include("database.php");
+include_once("database.php");
 
 $query = "SELECT e.name, i.path FROM events AS e LEFT JOIN images AS i ON e.banner_id = i.image_id LIMIT 3";
 $result = $conn->execute_query($query);

@@ -2,9 +2,10 @@
 session_start();
 
 include("debug.php");
+include_once("database.php");
 
 
-$target_user_id = $_GET["user"] ?? $_SESSION["user_id"];
+$target_user_id = $_GET["user"] ?? $_SESSION["user_id"] ?? null;
 
 if (!isset($target_user_id)) {
     header("Location: login.php");
