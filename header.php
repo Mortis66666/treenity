@@ -1,6 +1,21 @@
 <?php
+include_once("database.php");
 if (!isset($_SESSION)) {
     session_start();
+}
+
+$profile_icon_path = '';
+if (isset($_SESSION['user_id'])) {
+    $profile_result = $conn->execute_query(
+        "SELECT profile_icon_id, username FROM `users` WHERE user_id = ?",
+        [$_SESSION['user_id']]
+    );
+    $user_data = $profile_result->fetch_assoc();
+    if (!empty($user_data['profile_icon_id'])) {
+        $profile_icon_path = get_image_path((int) $user_data['profile_icon_id']);
+    }
+
+    $username = $user_data['username'];
 }
 ?>
 
@@ -24,8 +39,12 @@ if (!isset($_SESSION)) {
         <?php if (isset($_SESSION['user_id'])): ?>
             <details class="profile-menu">
                 <summary aria-label="Open profile menu" title="Profile menu">
-                    <span class="profile-icon" aria-hidden="true">&#128100;</span>
-                    <span class="profile-menu-label">Account</span>
+                    <?php if ($profile_icon_path !== ''): ?>
+                        <img class="profile-icon profile-icon-image" src="<?= htmlspecialchars($profile_icon_path, ENT_QUOTES, 'UTF-8') ?>" alt="">
+                    <?php else: ?>
+                        <span class="profile-icon" aria-hidden="true">&#128100;</span>
+                    <?php endif; ?>
+                    <span class="profile-menu-label"><?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?></span>
                 </summary>
                 <div class="profile-dropdown">
                     <a href="profile.php">Profile</a>

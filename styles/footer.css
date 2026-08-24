@@ -1,6 +1,6 @@
 .footer {
     width: 100%;
-    min-height: 100px;
+    min-height: 128px;
     box-sizing: border-box;
     margin-top: 32px;
 
@@ -8,16 +8,18 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
     align-items: center;
 
-    padding: 10px 20px;
+    padding: 18px 34px;
 
-    background: #3d4143;
-    color: white;
+    background: #4b3027;
+    color: #f6f1e8;
 
     font-family: Georgia, "Times New Roman", serif;
+    border-top: 4px solid #39706e;
+    box-shadow: 0 -6px 18px rgba(36, 25, 20, 0.12);
 
     a {
-        color: white;
-        text-decoration: underline;
+        color: #f6f1e8;
+        text-decoration: none;
     }
 }
 
@@ -35,13 +37,23 @@
     align-items: center;
     justify-content: center;
 
-    background: #292b2c;
+    border: 1px solid #8d6048;
+    background: #6b4435;
+    color: #f6f1e8;
 
     font-size: 18px;
     font-weight: bold;
 }
 
+.footer-logo img {
+    display: block;
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+}
+
 .footer-title {
+    color: #f6f1e8;
     font-size: 22px;
     font-weight: bold;
     white-space: nowrap;
@@ -62,7 +74,8 @@
     align-items: center;
     gap: 12px;
 
-    font-size: 18px;
+    color: #eaded2;
+    font-size: 16px;
     font-weight: bold;
     text-align: center;
     white-space: normal;
@@ -73,10 +86,11 @@
     width: 1px;
     height: 22px;
 
-    background: white;
+    background: #b98968;
 }
 
 .footer-copyright {
+    color: #cdb9aa;
     font-size: 15px;
     font-weight: bold;
 }
@@ -99,7 +113,8 @@
     align-items: center;
     justify-content: center;
 
-    background: #292b2c;
+    border: 1px solid #8d6048;
+    background: #6b4435;
     text-decoration: none;
 }
 
@@ -111,8 +126,8 @@
 
 .social-link:hover,
 .social-link:focus-visible {
-    background: #596064;
-    outline: 2px solid white;
+    background: #39706e;
+    outline: 2px solid #d9a441;
     outline-offset: 2px;
 }
 
@@ -129,7 +144,7 @@
 
         gap: 16px;
 
-        padding: 18px 16px;
+        padding: 22px 16px;
     }
 
     .footer-brand {

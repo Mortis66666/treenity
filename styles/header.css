@@ -98,8 +98,21 @@
 }
 
 .profile-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #39706e;
     font-size: 20px;
     line-height: 1;
+}
+
+.profile-icon-image {
+    border: 1px solid rgba(246, 241, 232, 0.5);
+    box-sizing: border-box;
+    object-fit: cover;
 }
 
 .profile-dropdown {
