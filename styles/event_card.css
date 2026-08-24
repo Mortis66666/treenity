@@ -1,0 +1,101 @@
+.event-card-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.event-card {
+    overflow: hidden;
+    border: 1px solid #d9dfe2;
+    border-radius: 6px;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(36, 52, 56, 0.08);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.event-card-link:hover .event-card,
+.event-card-link:focus-visible .event-card {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(36, 52, 56, 0.14);
+}
+
+.event-card-link:focus-visible {
+    border-radius: 6px;
+    outline: 3px solid rgba(57, 112, 110, 0.35);
+    outline-offset: 3px;
+}
+
+.event-card-image {
+    display: block;
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    background: #e9eff0;
+    border-bottom: 4px solid #39706e;
+}
+
+.event-card-image--empty {
+    display: grid;
+    place-items: center;
+    color: #68777a;
+    font-size: 14px;
+}
+
+.event-card-body {
+    padding: 18px 20px 22px;
+    background: #f1f6f4;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.event-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    color: #526366;
+    font-size: 12px;
+}
+
+.event-status {
+    padding: 5px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+}
+
+.event-status--upcoming {
+    background: #fff1d6;
+    color: #8a5a12;
+}
+
+.event-status--ongoing {
+    background: #dcefe8;
+    color: #286653;
+}
+
+.event-status--ended {
+    background: #eceff0;
+    color: #68777a;
+}
+
+.event-card h2 {
+    margin: 0;
+    color: #243438;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.25;
+}
+
+.event-card-description {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 10px 0 0;
+    color: #68777a;
+    line-height: 1.5;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}

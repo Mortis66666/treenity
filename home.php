@@ -1,7 +1,8 @@
 <?php
 include_once("database.php");
+require_once(__DIR__ . "/components/event_card.php");
 
-$query = "SELECT e.name, i.path FROM events AS e LEFT JOIN images AS i ON e.banner_id = i.image_id LIMIT 3";
+$query = "SELECT e.*, i.path FROM events AS e LEFT JOIN images AS i ON e.banner_id = i.image_id LIMIT 3";
 $result = $conn->execute_query($query);
 ?>
 
@@ -15,6 +16,7 @@ $result = $conn->execute_query($query);
 
     <?php include("global.php"); ?>
     <link rel="stylesheet" href="styles/home.css">
+    <link rel="stylesheet" href="styles/events.css">
 
 
 </head>
@@ -65,12 +67,12 @@ $result = $conn->execute_query($query);
                 </div>
                 <a class="text-link" href="events.php">See all ongoing events <span aria-hidden="true">&#8594;</span></a>
             </div>
-            <div class="home-event-list">
+            <div class="home-event-list event-list">
                 <?php if ($result->num_rows === 0): ?>
                     <p class="home-events-empty">New planting days are being prepared. Check back soon.</p>
                 <?php else: ?>
                     <?php while ($row = $result->fetch_assoc()): ?>
-                        <a class="home-event" href="events.php"><span class="home-event-marker" aria-hidden="true"></span><span class="home-event-name"><?= htmlspecialchars($row["name"], ENT_QUOTES, "UTF-8") ?></span><span class="home-event-arrow" aria-hidden="true">&#8599;</span></a>
+                        <?php renderEventCard($row); ?>
                     <?php endwhile; ?>
                 <?php endif; ?>
             </div>
