@@ -24,6 +24,7 @@ include("pagination.php");
         </div>
 
         <a href="users.php">users</a>
+        <a href="new_item.php">new item</a>
     </main>
 
     <?php include("footer.php"); ?>
