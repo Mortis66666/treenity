@@ -22,6 +22,7 @@ if ($result->num_rows === 0) {
 }
 
 $user = $result->fetch_assoc();
+$role = $user["role"];
 $profile_image_path = get_image_path($user["profile_icon_id"]);
 
 
@@ -76,61 +77,63 @@ $participated_events = [
                 </div>
                 <div class="profile-info">
                     <h1><?php echo htmlspecialchars($user["username"]); ?></h1>
-                    <p><?php echo htmlspecialchars($user["bio"]); ?></p>
+                    <p><?php echo htmlspecialchars($role === "USER" ? $user["bio"] : "This is an $role account"); ?></p>
                 </div>
             </section>
 
-            <div class="profile-tabs" data-tabs>
-                <div class="tab-list" role="tablist" aria-label="Profile views">
-                    <button class="tab-button is-active" id="profile-tab" type="button" role="tab" aria-selected="true" aria-controls="profile-panel">Profile</button>
-                    <button class="tab-button" id="logs-tab" type="button" role="tab" aria-selected="false" aria-controls="logs-panel" tabindex="-1">Logs</button>
+            <?php if ($role === "USER"): ?>
+                <div class="profile-tabs" data-tabs>
+                    <div class="tab-list" role="tablist" aria-label="Profile views">
+                        <button class="tab-button is-active" id="profile-tab" type="button" role="tab" aria-selected="true" aria-controls="profile-panel">Profile</button>
+                        <button class="tab-button" id="logs-tab" type="button" role="tab" aria-selected="false" aria-controls="logs-panel" tabindex="-1">Logs</button>
+                    </div>
+
+                    <section class="tab-panel is-active" id="profile-panel" role="tabpanel" aria-labelledby="profile-tab">
+
+                        <section class="profile-section">
+                            <h2>Achievements</h2>
+                            <div class="achievement-list">
+                                <div class="achievement">
+                                    <div class="badge">★</div><span>First Event</span>
+                                </div>
+                                <div class="achievement">
+                                    <div class="badge">★</div><span>Tree Planter</span>
+                                </div>
+                                <div class="achievement">
+                                    <div class="badge">★</div><span>7 Day Streak</span>
+                                </div>
+                                <div class="achievement">
+                                    <div class="badge">★</div><span>Community Helper</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="profile-section">
+                            <h2>Participated Events</h2>
+                            <div class="event-list">
+                                <?php foreach ($participated_events as $event): ?>
+                                    <?php renderEventCard($event); ?>
+                                <?php endforeach; ?>
+                            </div>
+                        </section>
+
+                        <section class="profile-section">
+                            <h2>Statistics</h2>
+                            <div class="stats">
+                                <div class="stat"><strong>24</strong><span>Participated Events</span></div>
+                                <div class="stat"><strong>12</strong><span>Highest Daily Streak</span></div>
+                                <div class="stat"><strong>156</strong><span>Trees Logged</span></div>
+                                <div class="stat"><strong><?php echo number_format($user["total_points"]); ?></strong><span>Total Points</span></div>
+                            </div>
+                        </section>
+                    </section>
+
+                    <section class="tab-panel logs-panel" id="logs-panel" role="tabpanel" aria-labelledby="logs-tab" hidden>
+                        <h2>Logs</h2>
+                        <p>No activity logs are available yet.</p>
+                    </section>
                 </div>
-
-                <section class="tab-panel is-active" id="profile-panel" role="tabpanel" aria-labelledby="profile-tab">
-
-                    <section class="profile-section">
-                        <h2>Achievements</h2>
-                        <div class="achievement-list">
-                            <div class="achievement">
-                                <div class="badge">★</div><span>First Event</span>
-                            </div>
-                            <div class="achievement">
-                                <div class="badge">★</div><span>Tree Planter</span>
-                            </div>
-                            <div class="achievement">
-                                <div class="badge">★</div><span>7 Day Streak</span>
-                            </div>
-                            <div class="achievement">
-                                <div class="badge">★</div><span>Community Helper</span>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="profile-section">
-                        <h2>Participated Events</h2>
-                        <div class="event-list">
-                            <?php foreach ($participated_events as $event): ?>
-                                <?php renderEventCard($event); ?>
-                            <?php endforeach; ?>
-                        </div>
-                    </section>
-
-                    <section class="profile-section">
-                        <h2>Statistics</h2>
-                        <div class="stats">
-                            <div class="stat"><strong>24</strong><span>Participated Events</span></div>
-                            <div class="stat"><strong>12</strong><span>Highest Daily Streak</span></div>
-                            <div class="stat"><strong>156</strong><span>Trees Logged</span></div>
-                            <div class="stat"><strong>2,450</strong><span>Total Points</span></div>
-                        </div>
-                    </section>
-                </section>
-
-                <section class="tab-panel logs-panel" id="logs-panel" role="tabpanel" aria-labelledby="logs-tab" hidden>
-                    <h2>Logs</h2>
-                    <p>No activity logs are available yet.</p>
-                </section>
-            </div>
+            <?php endif; ?>
         </div>
     </main>
 
