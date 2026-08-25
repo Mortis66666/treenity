@@ -48,7 +48,7 @@ if (isset($_SESSION['user_id'])) {
                 </summary>
                 <div class="profile-dropdown">
                     <a href="profile.php">Profile</a>
-                    <a href="profile.php?tab=settings">Settings</a>
+                    <a href="settings.php">Settings</a>
                     <a href="logout.php">Logout</a>
                 </div>
             </details>

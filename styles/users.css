@@ -11,6 +11,98 @@
     background: #f7f9f9;
 }
 
+.page-title-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.create-user-button {
+    padding: 10px 14px;
+    border-radius: 4px;
+    background: #39706e;
+    color: #ffffff;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.create-user-button:hover,
+.create-user-button:focus {
+    background: #2d5b59;
+}
+
+.back-to-users {
+    color: #39706e;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.back-to-users:hover,
+.back-to-users:focus {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.user-form {
+    width: min(100%, 560px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px;
+    border: 1px solid #d9dfe2;
+    border-radius: 6px;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(36, 52, 56, 0.08);
+}
+
+.user-form label {
+    margin-top: 8px;
+    color: #526366;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.user-form input,
+.user-form select {
+    min-height: 38px;
+    box-sizing: border-box;
+    padding: 7px 10px;
+    border: 1px solid #b8c4c7;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #243438;
+    font: inherit;
+}
+
+.user-form input:focus,
+.user-form select:focus {
+    border-color: #39706e;
+    outline: 3px solid rgba(57, 112, 110, 0.16);
+}
+
+.user-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.user-form-error {
+    width: min(100%, 560px);
+    box-sizing: border-box;
+    margin: 0;
+    padding: 12px 16px;
+    border: 1px solid #d7a6a6;
+    border-radius: 4px;
+    background: #fff5f5;
+    color: #a33b3b;
+    font-weight: 600;
+}
+
 .users-filters {
     width: 100%;
     box-sizing: border-box;

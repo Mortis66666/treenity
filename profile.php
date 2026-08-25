@@ -3,6 +3,7 @@ session_start();
 
 include("debug.php");
 include_once("database.php");
+require_once("components/event_card.php");
 
 
 $target_user_id = $_GET["user"] ?? $_SESSION["user_id"] ?? null;
@@ -12,8 +13,42 @@ if (!isset($target_user_id)) {
     exit();
 }
 
+$query = "SELECT * FROM `users` WHERE user_id = ?";
+$result = $conn->execute_query($query, [$target_user_id]);
+
+if ($result->num_rows === 0) {
+    header("Location: not_found.php");
+    exit();
+}
+
+$user = $result->fetch_assoc();
+$profile_image_path = get_image_path($user["profile_icon_id"]);
 
 
+// Fake participated events data
+$participated_events = [
+    [
+        "event_id" => 1,
+        "name" => "Tree Planting Day",
+        "description" => "A hands-on community planting day restoring local green space.",
+        "start_date" => "2026-06-12",
+        "end_date" => "2026-06-12"
+    ],
+    [
+        "event_id" => 2,
+        "name" => "Beach Cleanup",
+        "description" => "Working together to keep the coastline clean and welcoming.",
+        "start_date" => "2026-05-28",
+        "end_date" => "2026-05-28"
+    ],
+    [
+        "event_id" => 3,
+        "name" => "Community Garden",
+        "description" => "Growing food and connection in the neighborhood garden.",
+        "start_date" => "2026-05-14",
+        "end_date" => "2026-05-14"
+    ]
+];
 ?>
 
 <!DOCTYPE html>
@@ -36,10 +71,12 @@ if (!isset($target_user_id)) {
     <main class="content">
         <div class="profile-page">
             <section class="profile-header">
-                <div class="profile-image"><span>Profile Image</span></div>
+                <div class="profile-image">
+                    <img src="<?php echo htmlspecialchars($profile_image_path); ?>" alt="Profile image">
+                </div>
                 <div class="profile-info">
-                    <h1>Username</h1>
-                    <p>This is the user's short biography. They enjoy participating in environmental events and helping the community.</p>
+                    <h1><?php echo htmlspecialchars($user["username"]); ?></h1>
+                    <p><?php echo htmlspecialchars($user["bio"]); ?></p>
                 </div>
             </section>
 
@@ -72,18 +109,9 @@ if (!isset($target_user_id)) {
                     <section class="profile-section">
                         <h2>Participated Events</h2>
                         <div class="event-list">
-                            <div class="event">
-                                <h3>Tree Planting Day</h3>
-                                <p>12 June 2026</p>
-                            </div>
-                            <div class="event">
-                                <h3>Beach Cleanup</h3>
-                                <p>28 May 2026</p>
-                            </div>
-                            <div class="event">
-                                <h3>Community Garden</h3>
-                                <p>14 May 2026</p>
-                            </div>
+                            <?php foreach ($participated_events as $event): ?>
+                                <?php renderEventCard($event); ?>
+                            <?php endforeach; ?>
                         </div>
                     </section>
 

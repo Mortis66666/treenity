@@ -146,6 +146,7 @@ $table_headers = [
     <main class="content">
         <div class="page-title-bar">
             <h1>Users</h1>
+            <a class="create-user-button" href="create_user.php">Create new user</a>
         </div>
 
         <form class="users-filters" method="get">
