@@ -2,7 +2,7 @@
 
     <div class="footer-brand">
         <div class="footer-logo">
-            LOGO
+            <img src="images/assets/logo.jpg" alt="Treenity logo">
         </div>
 
         <div class="footer-title">

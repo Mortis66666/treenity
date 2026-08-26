@@ -185,6 +185,44 @@
     margin: 0 auto;
 }
 
+.home-event-list.event-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+}
+
+.featured-events .event-card {
+    border-color: #c8d8ce;
+    background: #edf4ef;
+    box-shadow: 0 8px 22px rgba(8, 29, 23, 0.28);
+}
+
+.featured-events .event-card-image {
+    border-bottom-color: #39706e;
+}
+
+.featured-events .event-card-body {
+    background: #edf4ef;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.featured-events .event-card-meta {
+    color: #526366;
+}
+
+.featured-events .event-card h2 {
+    color: #243438;
+}
+
+.featured-events .event-card-description {
+    color: #68777a;
+}
+
+.featured-events .event-status--ended {
+    background: #dfe8e2;
+    color: #526366;
+}
+
 .events-section-heading {
     display: flex;
     align-items: end;

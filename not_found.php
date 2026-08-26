@@ -1,7 +1,5 @@
 <?php
-include_once("database.php");
-include_once("check_user.php");
-include("pagination.php");
+
 ?>
 
 <!DOCTYPE html>
@@ -10,21 +8,23 @@ include("pagination.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Not found</title>
 
+    <link rel="stylesheet" href="styles/not_found.css">
     <?php include("global.php"); ?>
+
+
 </head>
 
 <body>
     <?php include("header.php"); ?>
 
     <main class="content">
-        <div class="page-title-bar">
-            <h1>Admin Dashboard</h1>
+        <div class="not-found-container">
+            <h1>404 - Not Found</h1>
+            <p>The page you are looking for does not exist.</p>
+            <a href="index.php" class="back-home">Back to Home</a>
         </div>
-
-        <a href="users.php">users</a>
-        <a href="new_item.php">new item</a>
     </main>
 
     <?php include("footer.php"); ?>

@@ -1,5 +1,5 @@
 <?php
-include("database.php");
+include_once("database.php");
 
 $sql = "SELECT item_id, name, description, stock_left, image_id, cost FROM store ORDER BY name ASC";
 $result = $conn->execute_query($sql);

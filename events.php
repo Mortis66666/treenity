@@ -1,5 +1,6 @@
 <?php
-include("database.php");
+include_once("database.php");
+require_once(__DIR__ . "/components/event_card.php");
 
 $query = "SELECT * FROM `events` as e LEFT JOIN images as i ON e.banner_id = i.image_id";
 $result = $conn->execute_query($query);
@@ -34,19 +35,7 @@ $result = $conn->execute_query($query);
                 <p class="events-empty">There are no events to show right now.</p>
             <?php else: ?>
                 <?php while ($row = $result->fetch_assoc()): ?>
-                    <article class="event-card">
-                        <?php if (!empty($row["path"])): ?>
-                            <img
-                                class="event-card-image"
-                                src="<?= htmlspecialchars("images/" . $row["path"], ENT_QUOTES, "UTF-8") ?>"
-                                alt="">
-                        <?php else: ?>
-                            <div class="event-card-image event-card-image--empty" aria-hidden="true">No image</div>
-                        <?php endif; ?>
-                        <div class="event-card-body">
-                            <h2><?= htmlspecialchars($row["name"], ENT_QUOTES, "UTF-8") ?></h2>
-                        </div>
-                    </article>
+                    <?php renderEventCard($row); ?>
                 <?php endwhile; ?>
             <?php endif; ?>
         </section>

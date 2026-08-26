@@ -1,67 +1,165 @@
+@import url("pagination.css");
+
+.leaderboard-page {
+    align-items: stretch;
+    gap: 30px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 58px 32px 70px;
+    background: #fffaf2;
+    color: #243438;
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+.leaderboard-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid #d4ded6;
+    padding-bottom: 24px;
+}
+
+.eyebrow {
+    margin: 0 0 10px;
+    color: #39706e;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+}
+
+.leaderboard-heading h1 {
+    margin: 0;
+    color: #183e32;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(42px, 6vw, 68px);
+    font-weight: 400;
+    line-height: .98;
+}
+
+.leaderboard-intro {
+    max-width: 500px;
+    margin: 18px 0 0;
+    color: #61736c;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.heading-mark {
+    color: #bf5b36;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 56px;
+    line-height: 1;
+}
+
 .leaderboard {
-    padding: 20px 15px;
+    overflow: hidden;
+    border: 1px solid #c8d8ce;
+    background: #f4f7f0;
+    box-shadow: 10px 10px 0 #e6efe7;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    min-width: 520px;
+    border-collapse: collapse;
+    text-align: left;
 }
 
 th,
 td {
-    padding: 12px 10px;
+    padding: 18px 24px;
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    margin-top: 25px;
+th {
+    border-bottom: 3px solid #39706e;
+    background: #183e32;
+    color: #f6f1e8;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
-.pagination button {
-    width: 64px;
-    height: 64px;
+td {
+    border-bottom: 1px solid #d4ded6;
+    color: #49635b;
+    font-size: 16px;
+}
 
-    border: none;
-    border-right: 1px solid #222;
+tbody tr:last-child td {
+    border-bottom: 0;
+}
 
-    background: #181a1b;
-    color: #ddd;
+tbody tr:hover {
+    background: #e6efe7;
+}
 
-    font-size: 18px;
-    font-weight: bold;
+.rank-cell {
+    width: 100px;
+    color: #bf5b36;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 22px;
+}
 
+.rank-cell span {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid #d9a441;
+    border-radius: 50%;
+}
+
+.username-link {
+    color: inherit;
     cursor: pointer;
+    text-decoration: none;
 }
 
-.pagination button:first-child {
-    border-radius: 4px 0 0 4px;
+.points-cell {
+    color: #183e32;
+    font-weight: 700;
+    text-align: right;
 }
 
-.pagination button:last-child {
-    border-radius: 0 4px 4px 0;
-    border: none;
+.points-cell small {
+    color: #39706e;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-/* Current page */
-
-.pagination button.active {
-    background: #101214;
-    color: white;
+.leaderboard-page .pagination {
+    margin-top: 4px;
 }
 
-.pagination button.active {
-    background: #101214;
-    color: white;
-}
+@media (max-width: 600px) {
+    .leaderboard-page {
+        gap: 24px;
+        padding: 42px 16px 52px;
+    }
 
-/* ... */
+    .leaderboard-heading {
+        align-items: start;
+    }
 
-.pagination .ellipsis {
-    width: 64px;
-    height: 64px;
+    .heading-mark {
+        font-size: 40px;
+    }
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    .leaderboard {
+        box-shadow: 6px 6px 0 #e6efe7;
+    }
 
-    color: #ddd;
-    font-weight: bold;
+    th,
+    td {
+        padding: 15px 16px;
+    }
 }
