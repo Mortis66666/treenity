@@ -1,0 +1,136 @@
+.settings-page {
+    box-sizing: border-box;
+    align-items: stretch;
+    max-width: 860px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 48px 24px 64px;
+}
+
+.settings-panel {
+    width: 100%;
+}
+
+.settings-panel h1 {
+    margin: 0 0 28px;
+    color: #243438;
+    font-size: 2em;
+}
+
+.settings-message {
+    margin: 0 0 24px;
+    padding: 12px 16px;
+}
+
+.settings-message p {
+    margin: 0;
+}
+
+.settings-message p + p {
+    margin-top: 6px;
+}
+
+.settings-error {
+    background: #f8e5e2;
+    color: #8c302b;
+}
+
+.settings-success {
+    background: #e6efe7;
+    color: #285c45;
+}
+
+.settings-form {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px 18px;
+}
+
+.profile-image-editor {
+    position: relative;
+    grid-column: 2;
+    justify-self: center;
+}
+
+.profile-image-editor img {
+    display: block;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #b8c4c7;
+    background: #eef2f3;
+    object-fit: cover;
+}
+
+.image-change {
+    position: absolute;
+    right: -20px;
+    top: 0;
+    color: #243438;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.profile-image-editor input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.settings-fields {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: 150px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px 18px;
+}
+
+.settings-fields label {
+    color: #243438;
+    font-weight: 700;
+}
+
+.settings-fields input {
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid #b8c4c7;
+    border-radius: 2px;
+    padding: 10px 12px;
+    color: #243438;
+    font: inherit;
+}
+
+.settings-form button {
+    grid-column: 2;
+    justify-self: center;
+    border: 0;
+    padding: 11px 30px;
+    background: #39706e;
+    color: #ffffff;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+}
+
+.settings-form button:hover,
+.settings-form button:focus-visible {
+    background: #285654;
+}
+
+@media (max-width: 600px) {
+    .settings-page {
+        padding: 36px 16px 44px;
+    }
+
+    .settings-form,
+    .settings-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-fields,
+    .profile-image-editor,
+    .settings-form button {
+        grid-column: 1;
+    }
+}

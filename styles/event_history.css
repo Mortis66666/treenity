@@ -1,0 +1,70 @@
+.event-history-page {
+    box-sizing: border-box;
+    align-items: stretch;
+    gap: 28px;
+    max-width: 1180px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 52px 24px 64px;
+}
+
+.event-history-page .page-title-bar h1 {
+    margin: 0;
+    color: #243438;
+    font-size: 2em;
+}
+
+.history-tabs {
+    width: 100%;
+}
+
+.history-tabs .tab-list {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.history-tabs .tab-button {
+    border: 0;
+    border-radius: 999px;
+    padding: 6px 16px;
+    background: #d9dfe2;
+    color: #243438;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+}
+
+.history-tabs .tab-button.is-active,
+.history-tabs .tab-button:hover,
+.history-tabs .tab-button:focus-visible {
+    background: #39706e;
+    color: #ffffff;
+}
+
+.history-tabs .event-list {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.history-empty {
+    margin: 0;
+    padding: 40px 20px;
+    border: 1px dashed #b8c4c7;
+    color: #68777a;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .event-history-page {
+        gap: 22px;
+        padding: 36px 16px 44px;
+    }
+
+    .history-tabs .tab-list {
+        flex-wrap: wrap;
+    }
+
+    .history-tabs .event-list {
+        grid-template-columns: 1fr;
+    }
+}

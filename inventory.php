@@ -67,7 +67,7 @@ function showInventoryItems(array $items): void
         if ($item['claimed_at'] !== null) {
             echo '<div class="claimed-date" style="color: #39706e;">Claimed: ' . htmlspecialchars($item['claimed_at'], ENT_QUOTES, 'UTF-8') . '</div>';
         } else {
-            echo '<div class="pending-label" style="color: #39706e;"><b>Pending</b></div>';
+            echo '<div class="pending-label" style="color: #d9a441;"><b>Pending</b></div>';
         }
         echo '</div></a>';
     }
