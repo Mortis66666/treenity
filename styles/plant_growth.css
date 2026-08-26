@@ -1,0 +1,149 @@
+.growth-page {
+    box-sizing: border-box;
+    align-items: stretch;
+    max-width: 860px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 48px 24px 64px;
+}
+
+.growth-panel {
+    width: 100%;
+}
+
+.growth-heading {
+    margin-bottom: 28px;
+    border-bottom: 2px solid #39706e;
+    padding-bottom: 20px;
+}
+
+.growth-heading h1 {
+    margin: 0;
+    color: #243438;
+    font-size: 2em;
+    font-weight: 700;
+}
+
+.growth-heading p:last-child {
+    margin: 10px 0 0;
+    color: #68777a;
+}
+
+.growth-form {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px 18px;
+}
+
+.growth-form > label:not(.photo-upload) {
+    color: #243438;
+    font-weight: 700;
+}
+
+.growth-form select,
+.growth-form input[type="number"],
+.growth-form textarea {
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid #b8c4c7;
+    border-radius: 2px;
+    padding: 10px 12px;
+    color: #243438;
+    font: inherit;
+}
+
+.growth-form textarea {
+    resize: vertical;
+}
+
+.photo-upload {
+    display: flex;
+    grid-column: 2;
+    min-height: 150px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid #b8c4c7;
+    background: #eef2f3;
+    color: #243438;
+    cursor: pointer;
+}
+
+.photo-upload span {
+    font-size: 24px;
+}
+
+.photo-upload small {
+    color: #68777a;
+}
+
+.photo-upload input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.growth-form button {
+    grid-column: 2;
+    justify-self: center;
+    border: 0;
+    padding: 11px 30px;
+    background: #39706e;
+    color: #ffffff;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+}
+
+.growth-form button:hover,
+.growth-form button:focus-visible {
+    background: #285654;
+}
+
+.message,
+.growth-empty {
+    margin: 0 0 24px;
+    padding: 12px 16px;
+}
+
+.message p {
+    margin: 0;
+}
+
+.message p + p {
+    margin-top: 6px;
+}
+
+.message-error {
+    background: #f8e5e2;
+    color: #8c302b;
+}
+
+.message-success {
+    background: #e6efe7;
+    color: #285c45;
+}
+
+.growth-empty {
+    border: 1px dashed #b8c4c7;
+    color: #68777a;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .growth-page {
+        padding: 36px 16px 44px;
+    }
+
+    .growth-form {
+        grid-template-columns: 1fr;
+    }
+
+    .photo-upload,
+    .growth-form button {
+        grid-column: 1;
+    }
+}

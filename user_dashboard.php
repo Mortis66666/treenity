@@ -1,3 +1,9 @@
+<?php
+include_once("database.php");
+include_once("check_user.php");
+include("pagination.php");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,7 +23,10 @@
             <h1>User Dashboard</h1>
         </div>
 
-        USER
+        <a href="achievements.php">Achievements</a>
+        <a href="event_history.php">Your Event History</a>
+        <a href="inventory.php">Your Inventory</a>
+        <a href="plant_growth.php">Upload Plant Growth Updates</a>
     </main>
 
     <?php include("footer.php"); ?>
