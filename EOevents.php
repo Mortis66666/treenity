@@ -16,7 +16,6 @@ if(isset($_GET['delete_event_id'])) {
     exit();
 }
 
-//Filter
 $filter = $_GET['filter'] ?? 'all';
 $search = trim($_GET['search'] ?? '');
 
