@@ -1,96 +1,100 @@
 <?php
-    session_start();
-    require 'database.php';
+session_start();
+require 'database.php';
 
-    if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Organiser') {
-        header("Location: login.php");
-        exit();
-    }
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'organizer') {
+    header("Location: login.php");
+    exit();
+}
 
-    $organizer_id = $_SESSION['user_id'];
-    $error= [];
-    $success='';
+$organizer_id = $_SESSION['user_id'];
+$error = [];
+$success = '';
 
-    if($_SERVER['REQUEST_METHOD'] ==='POST') {
-        $name = trim($_POST['name'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-        $start_time = trim($_POST['start_time'] ?? '');
-        $end_time = trim($_POST['end_time'] ?? '');
-        $verif_code = trim($_POST['verification_code'] ?? '');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = trim($_POST['name'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $start_time = trim($_POST['start_time'] ?? '');
+    $end_time = trim($_POST['end_time'] ?? '');
+    $verif_code = trim($_POST['verification_code'] ?? '');
 
-        if ($name === '') $error[] = 'Event name is required.';
-        if ($start_time === '') $error[] = 'Start date/time is required.';
-        if ($end_time === '') $error[] = 'End date/time is required.';
-        if ($start_time && $end_time && $start_time >= $end_time) $error[] = 'End time must be after start time.';
-        if ($verif_code === '') $error[] = 'Verification code is required.';
+    if ($name === '') $error[] = 'Event name is required.';
+    if ($start_time === '') $error[] = 'Start date/time is required.';
+    if ($end_time === '') $error[] = 'End date/time is required.';
+    if ($start_time && $end_time && $start_time >= $end_time) $error[] = 'End time must be after start time.';
+    if ($verif_code === '') $error[] = 'Verification code is required.';
 
-        $banner_path = null;
-        if (isset($_FILES['banner']['name'])) {
-            $allowed =[ 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-            $ftype = mine_content_type($_FILES['banner']['tmp_name']);
-            if (!in_array($ftype, $allowed)) {
-                $error[] = 'Invalid banner file type. Allowed types: JPEG, PNG, GIF, WEBP.';
+    $banner_path = null;
+    if (isset($_FILES['banner']['name'])) {
+        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $ftype = mine_content_type($_FILES['banner']['tmp_name']);
+        if (!in_array($ftype, $allowed)) {
+            $error[] = 'Invalid banner file type. Allowed types: JPEG, PNG, GIF, WEBP.';
+        } else {
+            $ext = pathinfo($_FILES['banner']['name'], PATHINFO_EXTENSION);
+            $fname = 'banner_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
+            $dest = 'image/' . $fname;
+            if (!move_uploaded_file($_FILES['banner']['tmp_name'], $dest)) {
+                $stmt = $pdo->prepare("INSERT INTO images (type, path) VALUES ('banner', :path)");
+                $stmt->execute([$dest]);
+                $banner_id = $pdo->lastInsertId();
             } else {
-                $ext = pathinfo($_FILES['banner']['name'], PATHINFO_EXTENSION);
-                $fname = 'banner_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
-                $dest = 'image/' . $fname;
-                if (!move_uploaded_file($_FILES['banner']['tmp_name'], $dest)) {
-                    $stmt = $pdo->prepare("INSERT INTO images (type, path) VALUES ('banner', :path)");
-                    $stmt->execute([$dest]);
-                    $banner_id = $pdo->lastInsertId();
-                }else {
-                    $error[] = 'Failed to upload banner image.';
-                }
+                $error[] = 'Failed to upload banner image.';
             }
         }
-        
-        if (empty($error)) {
-            $stmt = $pdo->prepare("INSERT INTO events (organizer_id, name, description, start_time, end_time, verification_code, banner_path) VALUES (:organizer_id, :name, :description, :start_time, :end_time, :verification_code, :banner_path)");
-            $stmt->execute([
-                ':organizer_id' => $organizer_id,
-                ':name' => $name,
-                ':description' => $description,
-                ':start_time' => $start_time,
-                ':end_time' => $end_time,
-                ':verification_code' => $verif_code,
-                ':banner_path' => $banner_path
-            ]);
-            $new_event_id = $pdo->lastInsertId();
-            $success = 'Event created successfully.';
-            header("Location: eo_events.php?created=1");
-            exit;
-        }
     }
 
-    include 'header.php';
+    if (empty($error)) {
+        $stmt = $pdo->prepare("INSERT INTO events (organizer_id, name, description, start_time, end_time, verification_code, banner_path) VALUES (:organizer_id, :name, :description, :start_time, :end_time, :verification_code, :banner_path)");
+        $stmt->execute([
+            ':organizer_id' => $organizer_id,
+            ':name' => $name,
+            ':description' => $description,
+            ':start_time' => $start_time,
+            ':end_time' => $end_time,
+            ':verification_code' => $verif_code,
+            ':banner_path' => $banner_path
+        ]);
+        $new_event_id = $pdo->lastInsertId();
+        $success = 'Event created successfully.';
+        header("Location: eo_events.php?created=1");
+        exit;
+    }
+}
+
+include 'header.php';
 ?>
 
 <link rel="stylesheet" href="style/global.\css">
 <style>
     .eo-wrap {
-        max-width:800px;
+        max-width: 800px;
         margin: 30px;
         padding: 0 20px;
     }
+
     .page-title {
         font-size: 22px;
         font-weight: 700;
         color: #fff;
         margin-bottom: 6px;
     }
-    .page-sub{
+
+    .page-sub {
         font-size: 14px;
         color: #fff;
         margin-bottom: 20px;
     }
-    .card{
+
+    .card {
         background: #1a2236;
         border: 1px solid #2a3a50;
         border-radius: 10px;
         padding: 24px;
         margin-bottom: 18px;
     }
-    .card-title{
+
+    .card-title {
         font-size: 13px;
         font-weight: 600;
         color: #6b7a99;
@@ -98,17 +102,23 @@
         text-transform: uppercase;
         letter-spacing: .05em;
     }
-    .form-group{
+
+    .form-group {
         margin-bottom: 16px;
     }
-    label{
+
+    label {
         display: block;
         font-size: 12px;
         color: #6b7a99;
         margin-bottom: 5px;
         font-weight: 600;
     }
-    input[type="text"], input[type="datetime-local"], textarea, select{
+
+    input[type="text"],
+    input[type="datetime-local"],
+    textarea,
+    select {
         width: 100%;
         padding: 9px 12px;
         border: 1px solid #2a3a50;
@@ -118,25 +128,31 @@
         font-size: 13px;
         box-sizing: border-box;
     }
-    input:focus, textarea:focus{
+
+    input:focus,
+    textarea:focus {
         outline: none;
         border-color: #2563eb;
     }
-    textarea{
+
+    textarea {
         resize: vertical;
         min-height: 80px;
     }
-    .two-col{
+
+    .two-col {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 14px;
     }
-    .btn-row{
+
+    .btn-row {
         display: flex;
         gap: 10px;
         margin-top: 10px;
     }
-    .btn-primary{
+
+    .btn-primary {
         background: #1a2236;
         color: #fff;
         border: none;
@@ -146,10 +162,12 @@
         font-size: 13px;
         font-weight: 600;
     }
-    .btn-primary:hover{
+
+    .btn-primary:hover {
         background: #1648c0;
     }
-    .btn-secondary{
+
+    .btn-secondary {
         background: #1a56db;
         color: #fff;
         border: none;
@@ -161,9 +179,11 @@
         text-decoration: none;
         display: inline-block;
     }
-    .btn-secondary:hover{
+
+    .btn-secondary:hover {
         background: #22304a;
     }
+
     .error-box {
         background: #450a0a;
         border: 1px solid #7f1d1d;
@@ -171,12 +191,14 @@
         border-radius: 8px;
         margin-bottom: 18px;
     }
-    .error-box p{
+
+    .error-box p {
         color: #fca5a5;
         font-size: 13px;
         margin: 3px 0;
     }
-    .upload-area{
+
+    .upload-area {
         border: 1px dashed #2a3a50;
         border-radius: 6px;
         padding: 20px;
@@ -186,27 +208,32 @@
         cursor: pointer;
         position: relative;
     }
-    .upload-area input{
+
+    .upload-area input {
         position: absolute;
         inset: 0;
         opacity: 0;
         cursor: pointer;
     }
-    .upload-area:hover{
+
+    .upload-area:hover {
         background: #2563eb;
     }
-    #preview-img{
+
+    #preview-img {
         max-width: 100%;
         max-height: 140px;
         border-radius: 6px;
         margin-top: 10px;
         display: none;
     }
+
     @media (max-width: 600px) {
-        .two-col{
+        .two-col {
             grid-template-columns: 1fr;
         }
-        .btn-row{
+
+        .btn-row {
             flex-direction: column;
         }
     }
