@@ -10,7 +10,7 @@
     padding: 58px 32px 70px;
     background: #fffaf2;
     color: #243438;
-    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+
 }
 
 .leaderboard-heading {
@@ -34,7 +34,7 @@
 .leaderboard-heading h1 {
     margin: 0;
     color: #183e32;
-    font-family: Georgia, "Times New Roman", serif;
+
     font-size: clamp(42px, 6vw, 68px);
     font-weight: 400;
     line-height: .98;
@@ -50,7 +50,7 @@
 
 .heading-mark {
     color: #bf5b36;
-    font-family: Georgia, "Times New Roman", serif;
+
     font-size: 56px;
     line-height: 1;
 }
@@ -104,7 +104,7 @@ tbody tr:hover {
 .rank-cell {
     width: 100px;
     color: #bf5b36;
-    font-family: Georgia, "Times New Roman", serif;
+
     font-size: 22px;
 }
 

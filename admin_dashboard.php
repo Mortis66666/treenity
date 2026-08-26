@@ -23,8 +23,9 @@ include("pagination.php");
             <h1>Admin Dashboard</h1>
         </div>
 
-        <a href="users.php">users</a>
-        <a href="new_item.php">new item</a>
+        <a href="analytics.php">View analytics</a>
+        <a href="users.php">Manage users</a>
+        <a href="new_item.php">Create item</a>
     </main>
 
     <?php include("footer.php"); ?>
