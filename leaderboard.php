@@ -97,7 +97,7 @@ if (isset($_SESSION["user_id"]) && $_SESSION["role"] === "USER") {
 
                     <tbody>
                         <?php if ($user_logged_in && $user_row): ?>
-                            <tr class="user-row">
+                            <tr class="user-row self-row">
                                 <td class="rank-cell"><span><?php echo htmlspecialchars($user_row['rank']); ?></span></td>
                                 <td class="username-cell"><a class="username-link" href="profile.php?user=<?php echo urlencode($user_row['user_id']); ?>"><?php echo htmlspecialchars($user_row['username']); ?></a></td>
                                 <td class="points-cell"><?php echo htmlspecialchars($user_row['total_points']); ?> <small>pts</small></td>

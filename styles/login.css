@@ -122,7 +122,7 @@
     color: #82938b;
 }
 
-.login-panel button {
+.login-panel form>button {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -139,13 +139,13 @@
     font-weight: 700;
 }
 
-.login-panel button span {
+.login-panel form>button span {
     font-size: 22px;
     line-height: 1;
 }
 
-.login-panel button:hover,
-.login-panel button:focus-visible {
+.login-panel form>button:hover,
+.login-panel form>button:focus-visible {
     background: #8e3f26;
     outline: 2px solid #d9a441;
     outline-offset: 3px;

@@ -136,6 +136,10 @@ tbody tr:hover {
     text-transform: uppercase;
 }
 
+.self-row {
+    background: #e6efe7;
+}
+
 .leaderboard-page .pagination {
     margin-top: 4px;
 }

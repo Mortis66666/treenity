@@ -150,15 +150,19 @@ $table_headers = [
         </div>
 
         <form class="users-filters" method="get">
-            <label for="user-search">Search users</label>
-            <input id="user-search" type="search" name="search" value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>" placeholder="Username or TP number">
-            <label for="role-filter">Role</label>
-            <select id="role-filter" name="role">
-                <option value="">All roles</option>
-                <?php foreach ($roles as $role): ?>
-                    <option value="<?= htmlspecialchars($role, ENT_QUOTES, 'UTF-8') ?>" <?= $role === $selected_role ? 'selected' : '' ?>><?= htmlspecialchars($role) ?></option>
-                <?php endforeach; ?>
-            </select>
+            <div class="filter-field">
+                <label for="user-search">Search users</label>
+                <input id="user-search" type="search" name="search" value="<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>" placeholder="Username or TP number">
+            </div>
+            <div class="filter-field">
+                <label for="role-filter">Role</label>
+                <select id="role-filter" name="role">
+                    <option value="">All roles</option>
+                    <?php foreach ($roles as $role): ?>
+                        <option value="<?= htmlspecialchars($role, ENT_QUOTES, 'UTF-8') ?>" <?= $role === $selected_role ? 'selected' : '' ?>><?= htmlspecialchars($role) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
             <button type="submit">Filter</button>
             <?php if ($search !== '' || $selected_role !== ''): ?>
                 <a class="clear-filters" href="users.php">Clear</a>
