@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizer Dashboard</title>
+    <title>organiser Dashboard</title>
 
     <?php include("global.php"); ?>
 </head>
@@ -14,10 +14,10 @@
 
     <main class="content">
         <div class="page-title-bar">
-            <h1>Organizer Dashboard</h1>
+            <h1>organiser Dashboard</h1>
         </div>
 
-        ORGANIZER
+        organiser
     </main>
 
     <?php include("footer.php"); ?>

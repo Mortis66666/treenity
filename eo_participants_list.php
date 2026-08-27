@@ -7,19 +7,19 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
     exit();
 }
 
-$organizer_id = $_SESSION['user_id'];
+$organiser_id = $_SESSION['user_id'];
 $participant_id = isset($_GET['participant_id']) ? (int)$_GET['participant_id'] : 0;
 
 $stmt = $pdo->prepare("SELECT p.participant_id, u.name, u.email, u.tp_number, e.name AS event_name, e.event_id
                         FROM participants p
                         JOIN users u ON p.user_id = u.user_id
                         JOIN events e ON p.event_id = e.event_id
-                        WHERE p.participant_id = ? AND e.organizer_id = ?");
-$stmt->execute(array($participant_id, $organizer_id));
+                        WHERE p.participant_id = ? AND e.organiser_id = ?");
+$stmt->execute(array($participant_id, $organiser_id));
 $participant = $stmt->fetch();
 
 if (!$participant) {
-    header("Location: EOParticipants.php");
+    header("Location: eo_participants.php");
     exit();
 }
 
@@ -204,7 +204,7 @@ foreach ($quest_progress as $qp) {
 
     <main class="content">
 
-        <a href="EOParticipants.php?event_id=<?php echo $participant['event_id']; ?>" class="back-link">&laquo; Back to Participant List</a>
+        <a href="eo_participants.php?event_id=<?php echo $participant['event_id']; ?>" class="back-link">&laquo; Back to Participant List</a>
 
         <div class="profile-box">
             <h2><?php echo htmlspecialchars($participant['name']); ?></h2>

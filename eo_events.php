@@ -2,17 +2,17 @@
 session_start();
 require("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANIZER') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organiser') {
     header("Location: login.php");
     exit();
 }
 
-$organizer_id = $_SESSION['user_id'];
+$organiser_id = $_SESSION['user_id'];
 
 if (isset($_POST['delete_event_id'])) {
-    $delete_stmt = $pdo->prepare("DELETE FROM events WHERE event_id = ? AND organizer_id = ?");
-    $delete_stmt->execute(array($_POST['delete_event_id'], $organizer_id));
-    header("Location: EOEvents.php?deleted=1");
+    $delete_stmt = $pdo->prepare("DELETE FROM events WHERE event_id = ? AND organiser_id = ?");
+    $delete_stmt->execute(array($_POST['delete_event_id'], $organiser_id));
+    header("Location: eo_events.php?deleted=1");
     exit();
 }
 
@@ -21,8 +21,8 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 $sql = "SELECT e.event_id, e.name, e.start_time, e.end_time, e.verification_code, COUNT(p.participant_id) AS participant_count
         FROM events e LEFT JOIN participants p ON e.event_id = p.event_id
-        WHERE e.organizer_id = ?";
-$params = array($organizer_id);
+        WHERE e.organiser_id = ?";
+$params = array($organiser_id);
 
 if ($search != '') {
     $sql .= " AND e.name LIKE ?";
@@ -261,7 +261,7 @@ foreach ($all_events as $ev) {
 
         <div class="page-header">
             <h1>Events Organised</h1>
-            <a href="EOCreateEvent.php" class="btn-primary">Create Event</a>
+            <a href="eo_quest_customizer.php" class="btn-primary">Create Event</a>
         </div>
 
         <?php if (isset($_GET['created'])) { ?>
@@ -278,7 +278,7 @@ foreach ($all_events as $ev) {
             <a href="?filter=ended" class="tab <?php if ($filter == 'ended') echo 'active'; ?>">Ended</a>
         </div>
 
-        <form method="GET" action="EOEvents.php" class="search-form">
+        <form method="GET" action="eo_events.php" class="search-form">
             <input type="hidden" name="filter" value="<?php echo $filter; ?>">
             <input type="text" name="search" placeholder="Search events..." value="<?php echo htmlspecialchars($search); ?>">
             <button type="submit" class="btn-primary">Search</button>
@@ -301,9 +301,9 @@ foreach ($all_events as $ev) {
                 <p>Code: <b><?php echo htmlspecialchars($ev['verification_code']); ?></b></p>
 
                 <div class="card-actions">
-                    <a href="EOParticipants.php?event_id=<?php echo $ev['event_id']; ?>">Participants</a>
-                    <a href="EOQuestCustomizer.php?event_id=<?php echo $ev['event_id']; ?>">Quests</a>
-                    <form method="POST" action="EOEvents.php" onsubmit="return confirm('Delete this event?');">
+                    <a href="eo_participants.php?event_id=<?php echo $ev['event_id']; ?>">Participants</a>
+                    <a href="eo_quest_customizer.php?event_id=<?php echo $ev['event_id']; ?>">Quests</a>
+                    <form method="POST" action="eo_events.php" onsubmit="return confirm('Delete this event?');">
                         <input type="hidden" name="delete_event_id" value="<?php echo $ev['event_id']; ?>">
                         <button type="submit">Delete</button>
                     </form>

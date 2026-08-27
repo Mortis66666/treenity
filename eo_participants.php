@@ -2,27 +2,27 @@
 session_start();
 require("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANIZER') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organiser') {
     header("Location: login.php");
     exit();
 }
 
-$organizer_id = $_SESSION['user_id'];
+$organiser_id = $_SESSION['user_id'];
 $event_id = isset($_GET['event_id']) ? (int)$_GET['event_id'] : 0;
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 $event = null;
 if ($event_id > 0) {
-    $event_stmt = $pdo->prepare("SELECT * FROM events WHERE event_id = ? AND organizer_id = ?");
-    $event_stmt->execute(array($event_id, $organizer_id));
+    $event_stmt = $pdo->prepare("SELECT * FROM events WHERE event_id = ? AND organiser_id = ?");
+    $event_stmt->execute(array($event_id, $organiser_id));
     $event = $event_stmt->fetch();
     if (!$event) {
         $event_id = 0;
     }
 }
 
-$my_events_stmt = $pdo->prepare("SELECT event_id, name FROM events WHERE organizer_id = ? ORDER BY start_time DESC");
-$my_events_stmt->execute(array($organizer_id));
+$my_events_stmt = $pdo->prepare("SELECT event_id, name FROM events WHERE organiser_id = ? ORDER BY start_time DESC");
+$my_events_stmt->execute(array($organiser_id));
 $my_events = $my_events_stmt->fetchAll();
 
 $participants = array();
@@ -215,7 +215,7 @@ if ($event_id > 0 && count($participants) > 0) {
 
         <h1>Participant List</h1>
 
-        <form method="GET" action="EOParticipants.php" class="event-select-form">
+        <form method="GET" action="eo_participants.php" class="event-select-form">
             <label for="event_id">Select Event:</label>
             <select name="event_id" id="event_id" onchange="this.form.submit()">
                 <option value="">-- Choose event --</option>
@@ -241,7 +241,7 @@ if ($event_id > 0 && count($participants) > 0) {
         <div class="section-box">
             <h2>Participants</h2>
 
-            <form method="GET" action="EOParticipants.php" class="search-form">
+            <form method="GET" action="eo_participants.php" class="search-form">
                 <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
                 <input type="text" name="search" placeholder="Search by name or TP number..." value="<?php echo htmlspecialchars($search); ?>">
                 <button type="submit" class="btn-primary">Search</button>
@@ -273,7 +273,7 @@ if ($event_id > 0 && count($participants) > 0) {
                     <td><?php echo $p['log_count']; ?></td>
                     <td><?php echo $points; ?> pts</td>
                     <td>
-                        <a href="EOParticipantDetail.php?participant_id=<?php echo $p['participant_id']; ?>&event_id=<?php echo $event_id; ?>">View Detail</a>
+                        <a href="eo_participantDetail.php?participant_id=<?php echo $p['participant_id']; ?>&event_id=<?php echo $event_id; ?>">View Detail</a>
                     </td>
                 </tr>
                 <?php $i++; } ?>

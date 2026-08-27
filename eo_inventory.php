@@ -2,7 +2,7 @@
 session_start();
 require("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANIZER') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organiser') {
     header("Location: login.php");
     exit();
 }
@@ -323,7 +323,7 @@ form textarea {
 
             <div class="section-box">
                 <h2>Add Item to Store</h2>
-                <form method="POST" action="EOInventory.php">
+                <form method="POST" action="eo_inventory.php">
                     <input type="hidden" name="action" value="add">
 
                     <label for="name">Item Name</label>
@@ -345,7 +345,7 @@ form textarea {
             <div class="section-box">
                 <h2>Store Items</h2>
 
-                <form method="GET" action="EOInventory.php" class="search-form">
+                <form method="GET" action="eo_inventory.php" class="search-form">
                     <input type="text" name="search" placeholder="Search items..." value="<?php echo htmlspecialchars($search); ?>">
                     <button type="submit" class="btn-primary">Search</button>
                 </form>
@@ -382,7 +382,7 @@ form textarea {
                         </td>
                         <td><?php echo $item['cost']; ?> pts</td>
                         <td>
-                            <form method="POST" action="EOInventory.php" class="stock-form">
+                            <form method="POST" action="eo_inventory.php" class="stock-form">
                                 <input type="hidden" name="action" value="update_stock">
                                 <input type="hidden" name="item_id" value="<?php echo $item['item_id']; ?>">
                                 <input type="number" name="stock_left" value="<?php echo $item['stock_left']; ?>" min="0" class="stock-input">
@@ -391,7 +391,7 @@ form textarea {
                         </td>
                         <td><span class="status-tag <?php echo $status_class; ?>"><?php echo $status_label; ?></span></td>
                         <td>
-                            <form method="POST" action="EOInventory.php" onsubmit="return confirm('Delete this item?');">
+                            <form method="POST" action="eo_inventory.php" onsubmit="return confirm('Delete this item?');">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="item_id" value="<?php echo $item['item_id']; ?>">
                                 <button type="submit">Delete</button>
