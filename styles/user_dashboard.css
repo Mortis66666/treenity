@@ -79,4 +79,24 @@
     .user-dashboard-page {
         padding: 36px 16px 44px;
     }
+
+    .dashboard-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .dashboard-actions a {
+        min-width: 0;
+    }
+
+    .dashboard-row {
+        min-height: 44px;
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 380px) {
+    .dashboard-actions {
+        grid-template-columns: 1fr;
+    }
 }

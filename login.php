@@ -9,18 +9,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     debug_log("Username: $username");
 
-    $sql = "SELECT user_id, role FROM users WHERE username=? AND password=?";
-    $result = $conn->execute_query($sql, [$username, $password]);
+    $sql = "SELECT user_id, role, password FROM users WHERE username = ?";
+    $result = $conn->execute_query($sql, [$username]);
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $_SESSION['user_id'] = $row['user_id'];
-        $_SESSION['role'] = $row['role'];
-        debug_log("Login successful");
+        $password_matches = password_verify($password, $row['password']);
+        $legacy_plaintext = !$password_matches && hash_equals((string) $row['password'], $password);
 
-        header("Location: dashboard.php");
-        exit();
-    } else {
+        if ($password_matches || $legacy_plaintext) {
+            if ($legacy_plaintext) {
+                $conn->execute_query(
+                    "UPDATE users SET password = ? WHERE user_id = ?",
+                    [password_hash($password, PASSWORD_DEFAULT), $row['user_id']]
+                );
+            }
+
+            $_SESSION['user_id'] = $row['user_id'];
+            $_SESSION['role'] = $row['role'];
+            debug_log("Login successful");
+
+            header("Location: dashboard.php");
+            exit();
+        }
+    }
+
+    if (!isset($_SESSION['user_id'])) {
         debug_log("Login failed");
         $_SESSION['error'] = "Login failed";
     }
