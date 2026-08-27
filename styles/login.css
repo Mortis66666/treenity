@@ -12,7 +12,7 @@
     padding: 90px max(7vw, 32px);
     background: #e6efe7;
     color: #20352f;
-    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+
 }
 
 .login-intro,
@@ -39,7 +39,7 @@
     max-width: 500px;
     margin: 18px 0 24px;
     color: #183e32;
-    font-family: Georgia, "Times New Roman", serif;
+    
     font-size: clamp(44px, 5.4vw, 72px);
     font-weight: 400;
     line-height: .98;
@@ -56,7 +56,7 @@
     display: block;
     margin-top: 34px;
     color: #bf5b36;
-    font-family: Georgia, "Times New Roman", serif;
+
     font-size: 56px;
     line-height: 1;
 }
@@ -82,7 +82,7 @@
 .login-panel h2 {
     margin: 12px 0 0;
     color: #183e32;
-    font-family: Georgia, "Times New Roman", serif;
+
     font-size: 46px;
     font-weight: 400;
 }
@@ -122,7 +122,7 @@
     color: #82938b;
 }
 
-.login-panel button {
+.login-panel form>button {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -139,13 +139,13 @@
     font-weight: 700;
 }
 
-.login-panel button span {
+.login-panel form>button span {
     font-size: 22px;
     line-height: 1;
 }
 
-.login-panel button:hover,
-.login-panel button:focus-visible {
+.login-panel form>button:hover,
+.login-panel form>button:focus-visible {
     background: #8e3f26;
     outline: 2px solid #d9a441;
     outline-offset: 3px;

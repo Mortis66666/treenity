@@ -1,0 +1,90 @@
+.signup-page {
+    background: #e6efe7;
+}
+
+.signup-intro {
+    align-self: center;
+    width: 100%;
+    max-width: 510px;
+}
+
+.signup-kicker {
+    margin: 0;
+    color: #9b4d2d;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.signup-intro h1 {
+    max-width: 500px;
+    margin: 18px 0 24px;
+    color: #183e32;
+    font-size: 64px;
+    font-weight: 400;
+    line-height: .98;
+}
+
+.signup-intro>p:not(.signup-kicker) {
+    max-width: 430px;
+    color: #49635b;
+    font-size: 17px;
+    line-height: 1.65;
+}
+
+.signup-botanical {
+    margin-top: 34px;
+    color: #bf5b36;
+    font-size: 56px;
+    line-height: 1;
+}
+
+.signup-panel {
+    max-width: 540px;
+}
+
+.signup-panel .login-panel-heading {
+    margin-bottom: 26px;
+}
+
+.password-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.password-field input {
+    margin-bottom: 0;
+    padding-right: 52px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    padding: 4px;
+    background: transparent;
+    color: #39706e;
+    cursor: pointer;
+    font: inherit;
+    font-size: 19px;
+    line-height: 1;
+}
+
+.password-toggle:hover,
+.password-toggle:focus-visible {
+    color: #9b4d2d;
+    outline: none;
+}
+
+@media (max-width: 760px) {
+    .signup-intro h1 {
+        font-size: 52px;
+    }
+}

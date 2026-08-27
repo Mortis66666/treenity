@@ -1,0 +1,15 @@
+.pending-rewards-page {
+    align-items: stretch;
+}
+
+.pending-rewards-summary {
+    margin: 10px 0 0;
+    color: #68777a;
+}
+
+.pending-rewards-page .pending-label {
+    color: #a16b18;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}

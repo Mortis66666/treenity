@@ -47,7 +47,7 @@
 .logs-panel h2 {
     margin: 0;
     color: #183e32;
-    font-family: Georgia, "Times New Roman", serif;
+
 }
 
 .profile-info h1 {
@@ -171,7 +171,7 @@
 
 .stat strong {
     color: #39706e;
-    font-family: Georgia, "Times New Roman", serif;
+
     font-size: 35px;
     font-weight: 400;
 }

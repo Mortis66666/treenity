@@ -74,7 +74,7 @@ include("debug.php");
         }
 
         form * {
-            font-family: 'Poppins', sans-serif;
+
             color: #ffffff;
             letter-spacing: 0.5px;
             outline: none;

@@ -57,9 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php include("header.php"); ?>
 
     <main class="content new-item-page">
-        <section class="new-item-heading" aria-labelledby="new-item-title">
+        <section class="heading">
             <p class="eyebrow">Admin workspace</p>
-            <h1 id="new-item-title">Create a store item</h1>
+            <h1>Create a store item</h1>
             <p>Add a new reward for the Treenity community to discover and redeem.</p>
         </section>
 

@@ -1,0 +1,79 @@
+.user-dashboard-page {
+    box-sizing: border-box;
+    align-items: stretch;
+    gap: 28px;
+    max-width: 1180px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 52px 24px 64px;
+}
+
+.user-dashboard-page .page-title-bar {
+    width: 100%;
+}
+
+.user-dashboard-page .page-title-bar h1 {
+    margin: 0;
+    color: #243438;
+    font-size: 2em;
+}
+
+.dashboard-section h2 {
+    margin: 0 0 10px;
+    color: #243438;
+    font-size: 1em;
+}
+
+.dashboard-list {
+    display: grid;
+    gap: 14px;
+}
+
+.dashboard-row {
+    display: flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 0 14px;
+    background: #eef2f3;
+    color: #243438;
+    text-decoration: none;
+}
+
+.dashboard-row span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dashboard-row time,
+.dashboard-row span:last-child {
+    flex-shrink: 0;
+    font-size: 0.9em;
+    font-weight: 700;
+}
+
+.dashboard-row:hover,
+.dashboard-row:focus-visible {
+    background: #e6efe7;
+}
+
+.dashboard-empty {
+    margin: 0;
+    padding: 12px 14px;
+    background: #eef2f3;
+    color: #68777a;
+}
+
+@media (max-width: 700px) {
+    .user-dashboard-page {
+        padding: 36px 16px 44px;
+    }
+
+    .dashboard-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+}

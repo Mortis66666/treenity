@@ -2,105 +2,103 @@
 session_start();
 require 'database.php';
 
-if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Organiser') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'ORGANIZER') {
     header("Location: login.php");
     exit();
 }
 
-$organiser_id = $_SESSION['user_id'];
+$organizer_id = $_SESSION['user_id'];
 
-$stmt = $pdo->prepare("SELECT COUNT(*) AS total_events FROM events WHERE organiser_id = :organiser_id");
-$stmt->execute(['organiser_id' => $organiser_id]);
-$total_events = $stmt->fetch()['total'];
+$result = $conn->execute_query("SELECT COUNT(*) AS total_events FROM events WHERE organizer_id = ?", [$organizer_id]);
+$total_events = $result->fetch_assoc()['total_events'];
 
-$stmt = $pdo->prepare("SELECT COUNT(*) AS total_participants FROM participants WHERE organiser_id = :organiser_id");
-$stmt->execute(['organiser_id' => $organiser_id]);
-$total_participants = $stmt->fetch()['total'];
-
-$stmt = $pdo->prepare("
+$result = $conn->execute_query("
 SELECT COUNT(p.participant_id) as total
 from participants p
 JOIN events e ON p.event_id = e.event_id
-WHERE e.organiser_id = :organiser_id
-");
-$stmt->execute(['organiser_id' => $organiser_id]);
-$total_participants = $stmt->fetch()['total'];
+WHERE e.organizer_id = ?
+", [$organizer_id]);
+$total_participants = $result->fetch_assoc()['total'];
 
-$stmt = $pdo->prepare("
+$result = $conn->execute_query("
 SELECT COUNT(l.log_id) as total
 FROM logs l
 JOIN participants p ON l.participant_id = p.participant_id
 JOIN events e ON p.event_id = e.event_id
-WHERE e.organiser_id = :organiser_id
-");
-$stmt->execute(['organiser_id' => $organiser_id]);
-$total_logs = $stmt->fetch()['total'];
+WHERE e.organizer_id = ?
+", [$organizer_id]);
+$total_logs = $result->fetch_assoc()['total'];
 
-$stmt = $pdo->prepare("
+$result = $conn->execute_query("
 SELECT COUNT(*) AS total from events
-WHERE organiser_id = :organiser_id AND start_time <= NOW() AND end_time >= NOW()
-");
-$stmt->execute(['organiser_id' => $organiser_id]);
-$total_active_events = $stmt->fetch()['total'];
+WHERE organizer_id = ? AND start_time <= NOW() AND end_time >= NOW()
+", [$organizer_id]);
+$total_active_events = $result->fetch_assoc()['total'];
 
-$stmt = $pdo->prepare("
-SELECT e.event_id, e.event_name, e.start_time, e.end_time, COUNT(p.participant_id) AS participant_count
+$result = $conn->execute_query("
+SELECT e.event_id, e.name, e.start_time, e.end_time, COUNT(p.participant_id) AS participant_count
 FROM events e
 LEFT JOIN participants p ON e.event_id = p.event_id
-WHERE e.organiser_id = :organiser_id
+WHERE e.organizer_id = ?
 GROUP BY e.event_id
 ORDER BY e.last_updated DESC
 LIMIT 5
-");
-$stmt->execute(['organiser_id' => $organiser_id]);
-$recent_events = $stmt->fetchALL();
+", [$organizer_id]);
+$recent_events = $result->fetch_all(MYSQLI_ASSOC);
 
 include 'header.php';
 ?>
 
 <link rel="stylesheet" href="styles/global.css ">
-<styl>
+<style>
     .eo-wrap {
         max-width: 1100px;
-        margin:  30px auto;
-        padding:0 20px;
+        margin: 30px auto;
+        padding: 0 20px;
     }
-    .page-title{
+
+    .page-title {
         font-size: 22px;
         font-weight: 700;
         color: #fff;
         margin-bottom: 20px;
     }
-    .stats-grid{
+
+    .stats-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 14px;
         margin-bottom: 24px;
     }
-    .stats-card{
+
+    .stats-card {
         background: #1a2236;
         border: 1px solid #2c3e50;
         border-radius: 10px;
         padding: 16px;
     }
-    .stats-card .val{
+
+    .stats-card .val {
         font-size: 28px;
         font-weight: 700;
         color: #fff;
     }
-    .stats-card .lbl{
+
+    .stats-card .lbl {
         font-size: 12px;
         color: #6b7a99;
         margin-top: 4px;
     }
-    .card{
+
+    .card {
         background: #1a2236;
         border: 1px solid #2c3e50;
         border-radius: 10px;
         padding: 18px;
         margin-bottom: 18px;
     }
-    .card-title{
+
+    .card-title {
         font-size: 13px;
         font-weight: 600;
         color: #6b7a99;
@@ -108,12 +106,14 @@ include 'header.php';
         text-transform: uppercase;
         letter-spacing: 0.5em;
     }
-    table{
+
+    table {
         width: 100%;
         border-collapse: collapse;
         font-size: 13px;
     }
-    th{
+
+    th {
         text-align: left;
         padding: 8px 10px;
         color: #6b7a99;
@@ -122,47 +122,57 @@ include 'header.php';
         text-transform: uppercase;
         border-bottom: 1px solid #2c3e50;
     }
-    td{
+
+    td {
         padding: 8px 10px;
         color: #c8d4e8;
         border-bottom: 1px solid #1e2d42;
     }
-    tr:last-child td{
+
+    tr:last-child td {
         border-bottom: none;
     }
-    .badge{
+
+    .badge {
         font-size: 11px;
         padding: 3px 8px;
         border-radius: 20px;
         font-weight: 600;
     }
-    .badge-active{
+
+    .badge-active {
         background: #14532d;
         color: #86efac;
     }
-    .badge-ended{
+
+    .badge-ended {
         background: #1f2937;
         color: #6b7280;
         border: 1px solid #374151;
     }
-    .badge-upcoming{
+
+    .badge-upcoming {
         background: #1e3a8a;
         color: #93c5fd;
     }
-    .btn-view{
+
+    .btn-view {
         font-size: 11px;
         color: #4a9eff;
         text-decoration: none;
     }
-    .btn-view:hover{
+
+    .btn-view:hover {
         text-decoration: underline;
     }
-    .quick-links{
+
+    .quick-links {
         display: flex;
         gap: 10px;
         margin-bottom: 24px;
     }
-    .btn-primary{
+
+    .btn-primary {
         background: #1a56db;
         color: #fff;
         border: none;
@@ -174,10 +184,12 @@ include 'header.php';
         text-decoration: none;
         display: inline-block;
     }
-    .btn-primary:hover{
+
+    .btn-primary:hover {
         background: #1648c0;
     }
-    .btn-secondary{
+
+    .btn-secondary {
         background: #1e2236;
         color: #c8d4e8;
         border: 1px solid #2a3a50;
@@ -189,17 +201,21 @@ include 'header.php';
         text-decoration: none;
         display: inline-block;
     }
-    .btn-secondary:hover{
+
+    .btn-secondary:hover {
         background: #22304a;
     }
+
     @media (max-width: 768px) {
         .stats-grid {
             grid-template-columns: 1fr 1fr;
         }
+
         .quick-links {
             flex-wrap: wrap;
         }
     }
+
     @media (max-width: 480px) {
         .stats-grid {
             grid-template-columns: 1fr;
@@ -237,7 +253,7 @@ include 'header.php';
         <a href="eo_quest_customizer.php" class="btn-secondary">Quest Customizer</a>
         <a href="eo_inventory.php" class="btn-secondary">Inventory</a>
     </div>
-    
+
     <div class="card">
         <div class="card-title">Recent Events</div>
         <?php if (empty($recent_events)): ?>
@@ -264,14 +280,14 @@ include 'header.php';
                         else $status = 'Active';
                         $badge = $status === 'Active' ? 'badge-active' : ($status === 'Ended' ? 'badge-ended' : 'badge-upcoming');
                     ?>
-                    <tr>
-                        <td><?= htmlspecialchars($event['event_name']) ?></td>
-                        <td><?= htmlspecialchars($event['start_time']) ?></td>
-                        <td><?= htmlspecialchars($event['end_time']) ?></td>
-                        <td><?= htmlspecialchars($event['participant_count']) ?></td>
-                        <td><span class="badge <?= $badge ?>"><?= $status ?></span></td>
-                        <td><a href="eo_participants.php?event_id=<?= $event['event_id'] ?>" class="btn-view">View Participants</a></td>
-                    </tr>
+                        <tr>
+                            <td><?= htmlspecialchars($event['name']) ?></td>
+                            <td><?= htmlspecialchars($event['start_time']) ?></td>
+                            <td><?= htmlspecialchars($event['end_time']) ?></td>
+                            <td><?= htmlspecialchars($event['participant_count']) ?></td>
+                            <td><span class="badge <?= $badge ?>"><?= $status ?></span></td>
+                            <td><a href="eo_participants.php?event_id=<?= $event['event_id'] ?>" class="btn-view">View Participants</a></td>
+                        </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>

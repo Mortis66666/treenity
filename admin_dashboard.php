@@ -23,8 +23,13 @@ include("pagination.php");
             <h1>Admin Dashboard</h1>
         </div>
 
-        <a href="users.php">users</a>
-        <a href="new_item.php">new item</a>
+        <nav class="dashboard-actions" aria-label="Dashboard shortcuts">
+            <a href="analytics.php">View analytics</a>
+            <a href="users.php">Manage users</a>
+            <a href="new_item.php">Create item</a>
+            <a href="event_approval.php">Approve events</a>
+            <a href="pending_rewards.php">View pending rewards</a>
+        </nav>
     </main>
 
     <?php include("footer.php"); ?>
