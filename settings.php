@@ -7,7 +7,7 @@ $errors = [];
 $success = '';
 
 $user_result = $conn->execute_query(
-    "SELECT username, name, email, tp_number, password, profile_icon_id FROM users WHERE user_id = ?",
+    "SELECT username, name, email, tp_number, bio, password, profile_icon_id FROM users WHERE user_id = ?",
     [$user_id]
 );
 $user = $user_result->fetch_assoc();
@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $tp_number = trim($_POST['tp_number'] ?? '');
+    $bio = trim($_POST['bio'] ?? '');
     $current_password = $_POST['current_password'] ?? '';
     $new_password = $_POST['new_password'] ?? '';
     $confirm_new_password = $_POST['confirm_new_password'] ?? '';
@@ -73,8 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
-        $fields = [$username, $name, $email, $tp_number];
-        $set_clause = 'username = ?, name = ?, email = ?, tp_number = ?';
+        $fields = [$username, $name, $email, $tp_number, $bio];
+        $set_clause = 'username = ?, name = ?, email = ?, tp_number = ?, bio = ?';
 
         if ($new_password !== '') {
             $set_clause .= ', password = ?';
@@ -92,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user['name'] = $name;
         $user['email'] = $email;
         $user['tp_number'] = $tp_number;
+        $user['bio'] = $bio;
         if ($image_id !== null) {
             $user['profile_icon_id'] = $image_id;
         }
@@ -101,6 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $user['name'];
     $email = $user['email'];
     $tp_number = $user['tp_number'];
+    $bio = $user['bio'] ?? '';
 }
 
 $profile_image_path = !empty($user['profile_icon_id'])
@@ -158,6 +161,9 @@ $profile_image_path = !empty($user['profile_icon_id'])
 
                     <label for="tp_number">TP Number</label>
                     <input id="tp_number" name="tp_number" type="text" maxlength="30" value="<?= htmlspecialchars($tp_number, ENT_QUOTES, 'UTF-8') ?>" required>
+
+                    <label for="bio">Bio</label>
+                    <textarea id="bio" name="bio" rows="4" maxlength="500"><?= htmlspecialchars($bio, ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
 
                 <section class="password-section" aria-labelledby="password-title">
