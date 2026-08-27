@@ -1,0 +1,44 @@
+.pending-event-proposals {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.pending-event-proposals h2 {
+    align-self: flex-start;
+    margin: 0;
+    color: #183e32;
+    font-size: 24px;
+}
+
+.pending-proposals-list table {
+    min-width: 520px;
+}
+
+.pending-proposals-list th:first-child,
+.pending-proposals-list td:first-child {
+    width: auto;
+    text-align: left;
+}
+
+.pending-proposals-list td:first-child {
+    color: #243438;
+    font-weight: 700;
+}
+
+.pending-proposals-list td:first-child a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.pending-proposals-list td:first-child a:hover,
+.pending-proposals-list td:first-child a:focus-visible {
+    color: #39706e;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+@media (max-width: 600px) {
+    .pending-event-proposals h2 {
+        font-size: 21px;
+    }
+}
