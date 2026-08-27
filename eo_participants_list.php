@@ -49,10 +49,10 @@ if ($event_id > 0) {
 $points_by_participant = array();
 if ($event_id > 0 && count($participants) > 0) {
     $points_result = $conn->execute_query("SELECT qp.participant_id, SUM(qp.value * q.reward_points) AS total_points
-                                   FROM quest_progress qp
-                                   JOIN quests q ON qp.quest_id = q.quest_id
-                                   WHERE q.event_id = ?
-                                   GROUP BY qp.participant_id", [$event_id]);
+                                FROM quest_progress qp
+                                JOIN quests q ON qp.quest_id = q.quest_id
+                                WHERE q.event_id = ?
+                                GROUP BY qp.participant_id", [$event_id]);
     $points_rows = $points_result->fetch_all(MYSQLI_ASSOC);
     foreach ($points_rows as $row) {
         $points_by_participant[$row['participant_id']] = $row['total_points'];
