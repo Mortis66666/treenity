@@ -62,10 +62,10 @@ $logs_result = $conn->execute_query(
         l.comments,
         l.height,
         i.path AS image_path
-     FROM logs l
-     LEFT JOIN images i ON l.image_id = i.image_id
-     WHERE l.participant_id = ?
-     ORDER BY l.log_id ASC",
+    FROM logs l
+    LEFT JOIN images i ON l.image_id = i.image_id
+    WHERE l.participant_id = ?
+    ORDER BY l.log_id ASC",
     [$participant_id]
 );
 
@@ -77,10 +77,10 @@ $quest_result = $conn->execute_query(
         q.requirement,
         q.reward_points,
         qp.value
-     FROM quest_progress qp
-     JOIN quests q ON qp.quest_id = q.quest_id
-     WHERE qp.participant_id = ?
-     AND q.event_id = ?",
+    FROM quest_progress qp
+    JOIN quests q ON qp.quest_id = q.quest_id
+    WHERE qp.participant_id = ?
+    AND q.event_id = ?",
     [
         $participant_id,
         $participant['event_id']
@@ -326,7 +326,6 @@ foreach ($quest_progress as $qp) {
 
         <div class="detail-layout">
 
-            <!-- QUEST PROGRESS -->
 
             <div class="section-box">
 
@@ -418,7 +417,6 @@ foreach ($quest_progress as $qp) {
 
             </div>
 
-            <!-- PLANT HISTORY -->
 
             <div class="section-box">
 
