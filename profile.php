@@ -25,42 +25,57 @@ $user = $result->fetch_assoc();
 $role = $user["role"];
 $profile_image_path = get_image_path($user["profile_icon_id"]);
 
-
-// Fake participated events data
-$participated_events = [
-    [
-        "event_id" => 1,
-        "name" => "Tree Planting Day",
-        "description" => "A hands-on community planting day restoring local green space.",
-        "start_date" => "2026-06-12",
-        "end_date" => "2026-06-12"
-    ],
-    [
-        "event_id" => 2,
-        "name" => "Beach Cleanup",
-        "description" => "Working together to keep the coastline clean and welcoming.",
-        "start_date" => "2026-05-28",
-        "end_date" => "2026-05-28"
-    ],
-    [
-        "event_id" => 3,
-        "name" => "Community Garden",
-        "description" => "Growing food and connection in the neighborhood garden.",
-        "start_date" => "2026-05-14",
-        "end_date" => "2026-05-14"
-    ]
-];
+$participated_events = [];
+$event_count = 0;
+$log_count = 0;
+$highest_height = 0;
+if ($role === "USER") {
+    $events_result = $conn->execute_query(
+        "SELECT e.event_id, e.name, e.description,
+                e.start_time AS start_date, e.end_time AS end_date,
+                i.path,
+                COUNT(l.log_id) AS log_count,
+                MAX(l.height) AS highest_height
+         FROM participants p
+         INNER JOIN events e ON e.event_id = p.event_id
+         LEFT JOIN images i ON i.image_id = e.banner_id
+         LEFT JOIN logs l ON l.participant_id = p.participant_id
+         WHERE p.user_id = ?
+         GROUP BY e.event_id, e.name, e.description, e.start_time, e.end_time, i.path
+         ORDER BY e.start_time DESC, e.event_id DESC",
+        [$target_user_id]
+    );
+    $participated_events = $events_result->fetch_all(MYSQLI_ASSOC);
+    $event_count = count($participated_events);
+    foreach ($participated_events as $event) {
+        $log_count += (int) $event['log_count'];
+        $highest_height = max($highest_height, (float) ($event['highest_height'] ?? 0));
+    }
+}
+$completed_quests = [];
+if ($role === "USER") {
+    $completed_quests_result = $conn->execute_query(
+        "SELECT DISTINCT q.name, q.quest_icon_id, e.name AS event_name
+         FROM participants p
+         INNER JOIN quest_progress qp ON qp.participant_id = p.participant_id AND qp.is_claimed = 1
+         INNER JOIN quests q ON q.quest_id = qp.quest_id
+         INNER JOIN events e ON e.event_id = q.event_id
+         WHERE p.user_id = ?
+         ORDER BY q.quest_id ASC",
+        [$target_user_id]
+    );
+    $completed_quests = $completed_quests_result->fetch_all(MYSQLI_ASSOC);
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
 
-    <link rel="stylesheet" href="styles/profile.css">
+    <link rel="stylesheet" href="styles/profile.css?v=4">
     <?php include("global.php"); ?>
 
     <script src="scripts/profile.js" defer></script>
@@ -76,62 +91,58 @@ $participated_events = [
                     <img src="<?php echo htmlspecialchars($profile_image_path); ?>" alt="Profile image">
                 </div>
                 <div class="profile-info">
+                    <?php if ($role === "ADMIN" || $role === "ORGANIZER"): ?>
+                        <p class="profile-role">This is an <?= htmlspecialchars(strtolower($role), ENT_QUOTES, 'UTF-8') ?> account</p>
+                    <?php endif; ?>
                     <h1><?php echo htmlspecialchars($user["username"]); ?></h1>
-                    <p><?php echo htmlspecialchars($role === "USER" ? $user["bio"] : "This is an $role account"); ?></p>
+                    <p><?php echo htmlspecialchars($user["bio"]); ?></p>
                 </div>
             </section>
 
-            <?php if ($role === "USER"): ?>
-                <div class="profile-tabs" data-tabs>
-                    <div class="tab-list" role="tablist" aria-label="Profile views">
-                        <button class="tab-button is-active" id="profile-tab" type="button" role="tab" aria-selected="true" aria-controls="profile-panel">Profile</button>
-                        <button class="tab-button" id="logs-tab" type="button" role="tab" aria-selected="false" aria-controls="logs-panel" tabindex="-1">Logs</button>
-                    </div>
-
-                    <section class="tab-panel is-active" id="profile-panel" role="tabpanel" aria-labelledby="profile-tab">
+                    <?php if ($role === "USER"): ?>
+                        <div class="profile-tabs">
 
                         <section class="profile-section">
-                            <h2>Achievements</h2>
-                            <div class="achievement-list">
-                                <div class="achievement">
-                                    <div class="badge">★</div><span>First Event</span>
+                            <h2>Completed Quests</h2>
+                            <?php if ($completed_quests): ?>
+                                <div class="quest-list">
+                                    <?php foreach ($completed_quests as $quest): ?>
+                                        <div class="quest">
+                                            <div class="quest-badge">
+                                                <img src="<?= htmlspecialchars(get_image_path((int) $quest['quest_icon_id']), ENT_QUOTES, 'UTF-8') ?>" alt="" width="40" height="40">
+                                            </div>
+                                            <strong><?= htmlspecialchars($quest['name'], ENT_QUOTES, 'UTF-8') ?></strong>
+                                            <span class="quest-event"><?= htmlspecialchars($quest['event_name'], ENT_QUOTES, 'UTF-8') ?></span>
+                                        </div>
+                                    <?php endforeach; ?>
                                 </div>
-                                <div class="achievement">
-                                    <div class="badge">★</div><span>Tree Planter</span>
-                                </div>
-                                <div class="achievement">
-                                    <div class="badge">★</div><span>7 Day Streak</span>
-                                </div>
-                                <div class="achievement">
-                                    <div class="badge">★</div><span>Community Helper</span>
-                                </div>
-                            </div>
+                            <?php else: ?>
+                                <p class="profile-empty">No quests completed yet.</p>
+                            <?php endif; ?>
                         </section>
 
                         <section class="profile-section">
                             <h2>Participated Events</h2>
-                            <div class="event-list">
-                                <?php foreach ($participated_events as $event): ?>
-                                    <?php renderEventCard($event); ?>
-                                <?php endforeach; ?>
-                            </div>
+                            <?php if ($participated_events): ?>
+                                <div class="event-list">
+                                    <?php foreach ($participated_events as $event): ?>
+                                        <?php renderEventCard($event); ?>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <p class="profile-empty">No participated events yet.</p>
+                            <?php endif; ?>
                         </section>
 
                         <section class="profile-section">
                             <h2>Statistics</h2>
                             <div class="stats">
-                                <div class="stat"><strong>24</strong><span>Participated Events</span></div>
-                                <div class="stat"><strong>12</strong><span>Highest Daily Streak</span></div>
-                                <div class="stat"><strong>156</strong><span>Trees Logged</span></div>
+                                <div class="stat"><strong><?php echo $event_count; ?></strong><span>Participated Events</span></div>
+                                <div class="stat"><strong><?php echo number_format($highest_height, 1); ?></strong><span>Highest Height (cm)</span></div>
+                                <div class="stat"><strong><?php echo $log_count; ?></strong><span>Trees Logged</span></div>
                                 <div class="stat"><strong><?php echo number_format($user["total_points"]); ?></strong><span>Total Points</span></div>
                             </div>
                         </section>
-                    </section>
-
-                    <section class="tab-panel logs-panel" id="logs-panel" role="tabpanel" aria-labelledby="logs-tab" hidden>
-                        <h2>Logs</h2>
-                        <p>No activity logs are available yet.</p>
-                    </section>
                 </div>
             <?php endif; ?>
         </div>

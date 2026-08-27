@@ -1,0 +1,143 @@
+.event-proposal-page {
+    box-sizing: border-box;
+    align-items: stretch;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 52px 24px 64px;
+}
+
+.event-proposal-panel {
+    padding: 36px;
+    border: 1px solid #d9dfe2;
+    border-top: 5px solid #39706e;
+    background: #f1f6f4;
+    box-shadow: 0 8px 22px rgba(36, 52, 56, 0.08);
+}
+
+.event-proposal-heading {
+    margin-bottom: 28px;
+}
+
+.event-proposal-heading h1 {
+    margin: 0 0 10px;
+    color: #183e32;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 400;
+}
+
+.event-proposal-heading p {
+    margin: 0;
+    color: #526366;
+    font-size: 16px;
+}
+
+.event-proposal-panel form {
+    display: grid;
+    gap: 20px;
+}
+
+.form-field {
+    display: grid;
+    gap: 8px;
+}
+
+.form-field label {
+    color: #243438;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.form-field input,
+.form-field textarea {
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid #b9c8c4;
+    border-radius: 3px;
+    padding: 12px 14px;
+    background: #ffffff;
+    color: #243438;
+    font: inherit;
+    font-size: 15px;
+}
+
+.form-field input[type="file"] {
+    padding: 10px;
+    background: #ffffff;
+}
+
+.form-field textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+    border-color: #39706e;
+    outline: 2px solid rgba(57, 112, 110, 0.25);
+    outline-offset: 2px;
+}
+
+.time-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.event-proposal-panel button {
+    border: 0;
+    border-radius: 3px;
+    padding: 14px 20px;
+    background: #39706e;
+    color: #ffffff;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+}
+
+.event-proposal-panel button:hover,
+.event-proposal-panel button:focus-visible {
+    background: #285c45;
+    outline: 2px solid #d9a441;
+    outline-offset: 3px;
+}
+
+.form-message {
+    margin: 0 0 24px;
+    padding: 12px 14px;
+    border-left: 3px solid;
+    font-size: 14px;
+}
+
+.form-message p {
+    margin: 0;
+}
+
+.form-message p + p {
+    margin-top: 6px;
+}
+
+.form-message-error {
+    border-color: #9b4d2d;
+    background: #f9e8df;
+    color: #74351f;
+}
+
+.form-message-success {
+    border-color: #39706e;
+    background: #e2efea;
+    color: #245a50;
+}
+
+@media (max-width: 600px) {
+    .event-proposal-page {
+        padding: 36px 16px 44px;
+    }
+
+    .event-proposal-panel {
+        padding: 24px 18px;
+    }
+
+    .time-fields {
+        grid-template-columns: 1fr;
+    }
+}

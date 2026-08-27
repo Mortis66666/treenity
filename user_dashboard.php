@@ -25,7 +25,7 @@ $future_events_result = $conn->execute_query(
     <title>User Dashboard</title>
 
     <?php include("global.php"); ?>
-    <link rel="stylesheet" href="styles/user_dashboard.css?v=7">
+    <link rel="stylesheet" href="styles/user_dashboard.css?v=8">
 </head>
 
 <body>
@@ -41,6 +41,7 @@ $future_events_result = $conn->execute_query(
             <a href="event_history.php">Your Event<br>History</a>
             <a href="inventory.php">Your Claimed<br>Rewards</a>
             <a href="plant_growth.php">Upload Plant<br>Growth Updates</a>
+            <a href="event_proposal.php">Propose an<br>Event</a>
         </nav>
 
         <section class="dashboard-section" aria-labelledby="future-events-title">

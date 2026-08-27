@@ -68,6 +68,33 @@
     transition: background 160ms ease, transform 160ms ease;
 }
 
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+}
+
+.secondary-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 18px;
+    border: 1px solid #39706e;
+    border-radius: 2px;
+    color: #285c45;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 160ms ease, transform 160ms ease;
+}
+
+.secondary-action:hover,
+.secondary-action:focus-visible {
+    background: #e6efe7;
+    transform: translateY(-2px);
+}
+
 .primary-action span {
     font-size: 22px;
     line-height: 1;

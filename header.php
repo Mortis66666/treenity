@@ -21,7 +21,7 @@ if (isset($_SESSION['user_id'])) {
 
 <header class="header" id="header">
     <a class="header-brand" href="home.php">
-        <img src="images/assets/logo.jpg" alt="Treenity" class="logo">
+        <img src="images/assets/logo.svg" alt="Treenity" class="logo">
         <span>Treenity</span>
     </a>
 

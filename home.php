@@ -15,7 +15,7 @@ $result = $conn->execute_query($query);
     <title>Treenity | Grow something lasting</title>
 
     <?php include("global.php"); ?>
-    <link rel="stylesheet" href="styles/home.css">
+    <link rel="stylesheet" href="styles/home.css?v=2">
     <link rel="stylesheet" href="styles/events.css">
 
 
@@ -30,7 +30,10 @@ $result = $conn->execute_query($query);
                 <p class="home-kicker">Plant today. Remember tomorrow.</p>
                 <h1 id="hero-title">Give your corner of the world a little more green.</h1>
                 <p class="hero-description">Treenity brings people together to plant trees, join local events, and watch every new leaf become part of a bigger story.</p>
-                <a class="primary-action" href="events.php">Start planting now! <span aria-hidden="true">&#8599;</span></a>
+                <div class="hero-actions">
+                    <a class="primary-action" href="events.php">Start planting now! <span aria-hidden="true">&#8599;</span></a>
+                    <a class="secondary-action" href="event_proposal.php">Propose an event. <span aria-hidden="true">&#8599;</span></a>
+                </div>
             </div>
             <div class="hero-image-wrap">
                 <img src="images/image.png" alt="A mature tree standing in a green hillside">
