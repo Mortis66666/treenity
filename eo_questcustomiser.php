@@ -1,8 +1,10 @@
 <?php
-session_start();
-require("database.php");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organizer') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANIZER') {
     header("Location: login.php");
     exit();
 }
@@ -11,9 +13,8 @@ $organizer_id = $_SESSION['user_id'];
 $success = '';
 $errors = array();
 
-$stmt = $pdo->prepare("SELECT event_id, name FROM events WHERE organizer_id = ? ORDER BY start_time DESC");
-$stmt->execute(array($organizer_id));
-$my_events = $stmt->fetchAll();
+$result = $conn->execute_query("SELECT event_id, name FROM events WHERE organizer_id = ? ORDER BY start_time DESC", [$organizer_id]);
+$my_events = $result->fetch_all(MYSQLI_ASSOC);
 
 $selected_event_id = 0;
 if (isset($_GET['event_id'])) {
@@ -23,9 +24,8 @@ if (isset($_GET['event_id'])) {
 }
 
 if ($selected_event_id > 0) {
-    $check_stmt = $pdo->prepare("SELECT event_id FROM events WHERE event_id = ? AND organizer_id = ?");
-    $check_stmt->execute(array($selected_event_id, $organizer_id));
-    if (!$check_stmt->fetch()) {
+    $check_result = $conn->execute_query("SELECT event_id FROM events WHERE event_id = ? AND organizer_id = ?", [$selected_event_id, $organizer_id]);
+    if (!$check_result->fetch_assoc()) {
         $selected_event_id = 0;
     }
 }
@@ -49,8 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         }
 
         if (count($errors) == 0) {
-            $insert_stmt = $pdo->prepare("INSERT INTO quests (event_id, type, requirement, reward_points) VALUES (?, ?, ?, ?)");
-            $insert_stmt->execute(array($event_id, $type, $requirement, $reward_points));
+            $conn->execute_query("INSERT INTO quests (event_id, type, requirement, reward_points) VALUES (?, ?, ?, ?)", [$event_id, $type, $requirement, $reward_points]);
             $success = "Quest created successfully!";
             $selected_event_id = $event_id;
         }
@@ -58,17 +57,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 
     if ($_POST['action'] == 'delete') {
         $quest_id = (int)$_POST['quest_id'];
-        $delete_stmt = $pdo->prepare("DELETE q FROM quests q, events e WHERE q.event_id = e.event_id AND q.quest_id = ? AND e.organizer_id = ?");
-        $delete_stmt->execute(array($quest_id, $organizer_id));
+        $conn->execute_query("DELETE q FROM quests q, events e WHERE q.event_id = e.event_id AND q.quest_id = ? AND e.organizer_id = ?", [$quest_id, $organizer_id]);
         $success = "Quest deleted.";
     }
 }
 
 $quests = array();
 if ($selected_event_id > 0) {
-    $quest_stmt = $pdo->prepare("SELECT * FROM quests WHERE event_id = ? ORDER BY quest_id ASC");
-    $quest_stmt->execute(array($selected_event_id));
-    $quests = $quest_stmt->fetchAll();
+    $quest_result = $conn->execute_query("SELECT * FROM quests WHERE event_id = ? ORDER BY quest_id ASC", [$selected_event_id]);
+    $quests = $quest_result->fetch_all(MYSQLI_ASSOC);
 }
 
 $quest_types = array('CHECK_IN', 'PHOTO', 'DISTANCE', 'LOG', 'COMPLETION');
@@ -275,7 +272,7 @@ form input:focus {
             <div class="error-box"><?php echo $error; ?></div>
         <?php } ?>
 
-        <form method="GET" action="eo_quest_customizer.php" class="event-select-form">
+        <form method="GET" action="eo_questcustomiser.php" class="event-select-form">
             <label for="event_id">Select Event:</label>
             <select name="event_id" id="event_id" onchange="this.form.submit()">
                 <option value="">-- Choose event --</option>
@@ -295,7 +292,7 @@ form input:focus {
 
             <div class="section-box">
                 <h2>Create New Quest</h2>
-                <form method="POST" action="eo_quest_customizer.php">
+                <form method="POST" action="eo_questcustomiser.php">
                     <input type="hidden" name="action" value="create">
                     <input type="hidden" name="event_id" value="<?php echo $selected_event_id; ?>">
 
@@ -333,7 +330,7 @@ form input:focus {
                                 Reward: <b><?php echo $q['reward_points']; ?> pts</b>
                             </p>
                         </div>
-                        <form method="POST" action="eo_quest_customizer.php" onsubmit="return confirm('Delete this quest?');">
+                        <form method="POST" action="eo_questcustomiser.php" onsubmit="return confirm('Delete this quest?');">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="quest_id" value="<?php echo $q['quest_id']; ?>">
                             <input type="hidden" name="event_id" value="<?php echo $selected_event_id; ?>">

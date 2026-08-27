@@ -1,63 +1,46 @@
 <?php
-session_start();
-require("database.php");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organizer') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANIZER') {
     header("Location: login.php");
     exit();
 }
 
 $organizer_id = $_SESSION['user_id'];
-$event_id = isset($_GET['event_id']) ? (int)$_GET['event_id'] : 0;
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$participant_id = isset($_GET['participant_id']) ? (int)$_GET['participant_id'] : 0;
 
-$event = null;
-if ($event_id > 0) {
-    $event_stmt = $pdo->prepare("SELECT * FROM events WHERE event_id = ? AND organizer_id = ?");
-    $event_stmt->execute(array($event_id, $organizer_id));
-    $event = $event_stmt->fetch();
-    if (!$event) {
-        $event_id = 0;
-    }
+$result = $conn->execute_query("SELECT p.participant_id, u.name, u.email, u.tp_number, e.name AS event_name, e.event_id
+                        FROM participants p
+                        JOIN users u ON p.user_id = u.user_id
+                        JOIN events e ON p.event_id = e.event_id
+                        WHERE p.participant_id = ? AND e.organizer_id = ?", [$participant_id, $organizer_id]);
+$participant = $result->fetch_assoc();
+
+if (!$participant) {
+    header("Location: eo_participants.php");
+    exit();
 }
 
-$my_events_stmt = $pdo->prepare("SELECT event_id, name FROM events WHERE organizer_id = ? ORDER BY start_time DESC");
-$my_events_stmt->execute(array($organizer_id));
-$my_events = $my_events_stmt->fetchAll();
+$logs_result = $conn->execute_query("SELECT l.log_id, l.comments, l.height, i.path AS image_path
+                            FROM logs l
+                            LEFT JOIN images i ON l.image_id = i.image_id
+                            WHERE l.participant_id = ?
+                            ORDER BY l.log_id ASC", [$participant_id]);
+$logs = $logs_result->fetch_all(MYSQLI_ASSOC);
 
-$participants = array();
-if ($event_id > 0) {
-    $sql = "SELECT p.participant_id, u.name, u.tp_number, u.email, COUNT(l.log_id) AS log_count
-            FROM participants p
-            JOIN users u ON p.user_id = u.user_id
-            LEFT JOIN logs l ON l.participant_id = p.participant_id
-            WHERE p.event_id = ?";
-    $params = array($event_id);
+$quest_result = $conn->execute_query("SELECT q.type, q.requirement, q.reward_points, qp.value
+                            FROM quest_progress qp
+                            JOIN quests q ON qp.quest_id = q.quest_id
+                            WHERE qp.participant_id = ? AND q.event_id = ?", [$participant_id, $participant['event_id']]);
+$quest_progress = $quest_result->fetch_all(MYSQLI_ASSOC);
 
-    if ($search != '') {
-        $sql .= " AND (u.name LIKE ? OR u.tp_number LIKE ?)";
-        $params[] = "%" . $search . "%";
-        $params[] = "%" . $search . "%";
-    }
-
-    $sql .= " GROUP BY p.participant_id ORDER BY u.name ASC";
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-    $participants = $stmt->fetchAll();
-}
-
-$points_by_participant = array();
-if ($event_id > 0 && count($participants) > 0) {
-    $points_stmt = $pdo->prepare("SELECT qp.participant_id, SUM(qp.value * q.reward_points) AS total_points
-                                   FROM quest_progress qp
-                                   JOIN quests q ON qp.quest_id = q.quest_id
-                                   WHERE q.event_id = ?
-                                   GROUP BY qp.participant_id");
-    $points_stmt->execute(array($event_id));
-    $points_rows = $points_stmt->fetchAll();
-    foreach ($points_rows as $row) {
-        $points_by_participant[$row['participant_id']] = $row['total_points'];
+$total_points = 0;
+foreach ($quest_progress as $qp) {
+    if ($qp['value'] >= $qp['requirement']) {
+        $total_points = $total_points + $qp['reward_points'];
     }
 }
 
@@ -69,7 +52,7 @@ if ($event_id > 0 && count($participants) > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Participant List</title>
+    <title>Participant Detail</title>
 
     <style>
 .content {
@@ -78,50 +61,51 @@ if ($event_id > 0 && count($participants) > 0) {
     padding: 40px 20px 60px;
 }
 
-.content h1 {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 32px;
+.back-link {
+    display: inline-block;
     color: #1b4332;
-    margin-bottom: 20px;
-}
-
-.content h2 {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 18px;
-    color: #1b4332;
-    margin-bottom: 16px;
-}
-
-.event-select-form {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
-
-.event-select-form label {
     font-size: 14px;
-    color: #1b4332;
+    text-decoration: none;
+    margin-bottom: 18px;
     font-weight: 600;
 }
 
-.event-select-form select {
-    padding: 9px 12px;
-    border: 1px solid #d8cfc0;
-    border-radius: 6px;
-    font-size: 14px;
-    background: #fdfcfa;
+.back-link:hover {
+    text-decoration: underline;
 }
 
-.event-info-box {
+.profile-box {
     background: #f4f1ea;
     border: 1px solid #e0dacd;
-    border-radius: 6px;
-    padding: 12px 16px;
-    margin-bottom: 18px;
+    border-radius: 8px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.profile-box h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 22px;
+    color: #1b4332;
+    margin: 0 0 8px 0;
+}
+
+.profile-box p {
     font-size: 14px;
-    color: #33302a;
+    color: #6b6355;
+    margin: 4px 0;
+}
+
+.points-display {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1b4332;
+    margin-top: 10px;
+}
+
+.detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
 .section-box {
@@ -131,76 +115,82 @@ if ($event_id > 0 && count($participants) > 0) {
     padding: 22px;
 }
 
-.search-form {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-}
-
-.search-form input[type="text"] {
-    flex: 1;
-    min-width: 200px;
-    padding: 9px 12px;
-    border: 1px solid #d8cfc0;
-    border-radius: 6px;
-    font-size: 14px;
-}
-
-.btn-primary {
-    background: #1b4332;
-    color: #fff;
-    border: none;
-    padding: 9px 18px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.btn-primary:hover {
-    background: #2d6a4f;
-}
-
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-.data-table th {
-    text-align: left;
-    padding: 10px;
-    color: #6b6355;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    border-bottom: 2px solid #e0dacd;
-}
-
-.data-table td {
-    padding: 12px 10px;
-    color: #33302a;
-    border-bottom: 1px solid #eee6d8;
-}
-
-.data-table tr:last-child td {
-    border-bottom: none;
-}
-
-.data-table tr:hover td {
-    background: #faf8f3;
-}
-
-.data-table a {
+.content h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 18px;
     color: #1b4332;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 13px;
+    margin-bottom: 16px;
 }
 
-.data-table a:hover {
-    text-decoration: underline;
+.quest-progress-row {
+    margin-bottom: 16px;
+}
+
+.quest-progress-row:last-child {
+    margin-bottom: 0;
+}
+
+.quest-progress-row p {
+    font-size: 13px;
+    color: #33302a;
+    margin: 0 0 6px 0;
+}
+
+.progress-bar-track {
+    width: 100%;
+    height: 8px;
+    background: #e0dacd;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: #1b4332;
+    border-radius: 5px;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: #6b6355;
+    margin-top: 4px;
+}
+
+.log-card {
+    background: #f4f1ea;
+    border: 1px solid #e0dacd;
+    border-radius: 6px;
+    padding: 14px;
+    margin-bottom: 10px;
+}
+
+.log-card:last-child {
+    margin-bottom: 0;
+}
+
+.log-card p {
+    font-size: 13px;
+    color: #33302a;
+    margin: 6px 0;
+}
+
+.log-image {
+    width: 100%;
+    max-height: 160px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin: 8px 0;
+}
+
+.log-comment {
+    font-style: italic;
+    color: #6b6355;
+}
+
+@media (max-width: 700px) {
+    .detail-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
 </style>
@@ -213,77 +203,78 @@ if ($event_id > 0 && count($participants) > 0) {
 
     <main class="content">
 
-        <h1>Participant List</h1>
+        <a href="eo_participants.php?event_id=<?php echo $participant['event_id']; ?>" class="back-link">&laquo; Back to Participant List</a>
 
-        <form method="GET" action="eo_participants.php" class="event-select-form">
-            <label for="event_id">Select Event:</label>
-            <select name="event_id" id="event_id" onchange="this.form.submit()">
-                <option value="">-- Choose event --</option>
-                <?php foreach ($my_events as $ev) { ?>
-                    <option value="<?php echo $ev['event_id']; ?>" <?php if ($event_id == $ev['event_id']) echo 'selected'; ?>>
-                        <?php echo htmlspecialchars($ev['name']); ?>
-                    </option>
+        <div class="profile-box">
+            <h2><?php echo htmlspecialchars($participant['name']); ?></h2>
+            <p>
+                <?php echo htmlspecialchars($participant['tp_number']); ?> &nbsp;-&nbsp;
+                <?php echo htmlspecialchars($participant['email']); ?> &nbsp;-&nbsp;
+                <?php echo htmlspecialchars($participant['event_name']); ?>
+            </p>
+            <p class="points-display"><?php echo $total_points; ?> Points Earned</p>
+        </div>
+
+        <div class="detail-layout">
+
+            <div class="section-box">
+                <h2>Quest Progress</h2>
+
+                <?php if (count($quest_progress) == 0) { ?>
+                    <p>No quests assigned to this event.</p>
+                <?php } else { ?>
+
+                    <?php foreach ($quest_progress as $qp) {
+                        if ($qp['requirement'] > 0) {
+                            $percent = round(($qp['value'] / $qp['requirement']) * 100);
+                            if ($percent > 100) {
+                                $percent = 100;
+                            }
+                        } else {
+                            $percent = 0;
+                        }
+                        $is_done = ($qp['value'] >= $qp['requirement']);
+                    ?>
+                    <div class="quest-progress-row">
+                        <p><?php echo htmlspecialchars($qp['type']); ?> - <?php echo $qp['reward_points']; ?> pts</p>
+                        <div class="progress-bar-track">
+                            <div class="progress-bar-fill" style="width: <?php echo $percent; ?>%;"></div>
+                        </div>
+                        <p class="progress-text">
+                            <?php echo $qp['value']; ?> / <?php echo $qp['requirement']; ?>
+                            <?php if ($is_done) { ?> - Complete<?php } ?>
+                        </p>
+                    </div>
+                    <?php } ?>
+
                 <?php } ?>
-            </select>
-        </form>
+            </div>
 
-        <?php if ($event_id == 0) { ?>
-            <p>Please select an event to view participants.</p>
-        <?php } else { ?>
+            <div class="section-box">
+                <h2>Plant Update History (<?php echo count($logs); ?> updates)</h2>
 
-        <div class="event-info-box">
-            <b><?php echo htmlspecialchars($event['name']); ?></b> &nbsp;-&nbsp;
-            <?php echo date("d M Y", strtotime($event['start_time'])); ?> to
-            <?php echo date("d M Y", strtotime($event['end_time'])); ?>
-            &nbsp;-&nbsp; <?php echo count($participants); ?> participant(s)
+                <?php if (count($logs) == 0) { ?>
+                    <p>This participant has not submitted any plant updates yet.</p>
+                <?php } else { ?>
+
+                    <?php $count = count($logs); foreach ($logs as $log) { ?>
+                    <div class="log-card">
+                        <p><b>Update #<?php echo $count; ?></b> - Height: <?php echo $log['height']; ?> cm</p>
+
+                        <?php if ($log['image_path']) { ?>
+                            <img src="images/<?php echo htmlspecialchars($log['image_path']); ?>" alt="Plant photo" class="log-image">
+                        <?php } ?>
+
+                        <?php if ($log['comments']) { ?>
+                            <p class="log-comment">"<?php echo htmlspecialchars($log['comments']); ?>"</p>
+                        <?php } ?>
+                    </div>
+                    <?php $count--; } ?>
+
+                <?php } ?>
+            </div>
+
         </div>
-
-        <div class="section-box">
-            <h2>Participants</h2>
-
-            <form method="GET" action="eo_participants.php" class="search-form">
-                <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
-                <input type="text" name="search" placeholder="Search by name or TP number..." value="<?php echo htmlspecialchars($search); ?>">
-                <button type="submit" class="btn-primary">Search</button>
-            </form>
-
-            <?php if (count($participants) == 0) { ?>
-                <p>No participants found for this event.</p>
-            <?php } else { ?>
-
-            <table class="data-table">
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>TP Number</th>
-                    <th>Email</th>
-                    <th>Plant Updates</th>
-                    <th>Points Earned</th>
-                    <th></th>
-                </tr>
-
-                <?php $i = 1; foreach ($participants as $p) {
-                    $points = isset($points_by_participant[$p['participant_id']]) ? $points_by_participant[$p['participant_id']] : 0;
-                ?>
-                <tr>
-                    <td><?php echo $i; ?></td>
-                    <td><?php echo htmlspecialchars($p['name']); ?></td>
-                    <td><?php echo htmlspecialchars($p['tp_number']); ?></td>
-                    <td><?php echo htmlspecialchars($p['email']); ?></td>
-                    <td><?php echo $p['log_count']; ?></td>
-                    <td><?php echo $points; ?> pts</td>
-                    <td>
-                        <a href="eo_participantDetail.php?participant_id=<?php echo $p['participant_id']; ?>&event_id=<?php echo $event_id; ?>">View Detail</a>
-                    </td>
-                </tr>
-                <?php $i++; } ?>
-
-            </table>
-
-            <?php } ?>
-        </div>
-
-        <?php } ?>
 
     </main>
 

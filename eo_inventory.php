@@ -1,8 +1,10 @@
 <?php
-session_start();
-require("database.php");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organizer') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANIZER') {
     header("Location: login.php");
     exit();
 }
@@ -26,8 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         }
 
         if (count($errors) == 0) {
-            $insert_stmt = $pdo->prepare("INSERT INTO store (name, description, cost, stock_left) VALUES (?, ?, ?, ?)");
-            $insert_stmt->execute(array($name, $description, $cost, $stock_left));
+            $conn->execute_query("INSERT INTO store (name, description, cost, stock_left) VALUES (?, ?, ?, ?)", [$name, $description, $cost, $stock_left]);
             $success = "Item added to store.";
         }
     }
@@ -39,16 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         if ($new_stock < 0) {
             $errors[] = "Stock cannot be negative.";
         } else {
-            $update_stmt = $pdo->prepare("UPDATE store SET stock_left = ? WHERE item_id = ?");
-            $update_stmt->execute(array($new_stock, $item_id));
+            $conn->execute_query("UPDATE store SET stock_left = ? WHERE item_id = ?", [$new_stock, $item_id]);
             $success = "Stock updated.";
         }
     }
 
     if ($_POST['action'] == 'delete') {
         $item_id = (int)$_POST['item_id'];
-        $delete_stmt = $pdo->prepare("DELETE FROM store WHERE item_id = ?");
-        $delete_stmt->execute(array($item_id));
+        $conn->execute_query("DELETE FROM store WHERE item_id = ?", [$item_id]);
         $success = "Item deleted.";
     }
 }
@@ -63,9 +62,8 @@ if ($search != '') {
 }
 $sql .= " ORDER BY item_id DESC";
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$items = $stmt->fetchAll();
+$result = $conn->execute_query($sql, $params);
+$items = $result->fetch_all(MYSQLI_ASSOC);
 
 ?>
 

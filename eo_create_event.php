@@ -1,8 +1,10 @@
 <?php
-session_start();
-require("database.php");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organizer') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANIZER') {
     header("Location: login.php");
     exit();
 }
@@ -43,9 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (!in_array($file_type, $allowed_types)) {
             $errors[] = "Banner must be an image file (JPG, PNG, GIF, WEBP).";
         } else {
-            $insert_image = $pdo->prepare("INSERT INTO images (type) VALUES ('banner')");
-            $insert_image->execute();
-            $banner_id = $pdo->lastInsertId();
+            $conn->execute_query("INSERT INTO images (type) VALUES ('banner')");
+            $banner_id = $conn->insert_id;
 
             $target_path = "images/banner/" . $banner_id . ".png";
             move_uploaded_file($_FILES['banner']['tmp_name'], $target_path);
@@ -53,8 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (count($errors) == 0) {
-        $insert_event = $pdo->prepare("INSERT INTO events (banner_id, organizer_id, name, description, verification_code, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $insert_event->execute(array($banner_id, $organizer_id, $name, $description, $verification_code, $start_time, $end_time));
+        $conn->execute_query("INSERT INTO events (banner_id, organizer_id, name, description, verification_code, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?)", [$banner_id, $organizer_id, $name, $description, $verification_code, $start_time, $end_time]);
 
         header("Location: eo_events.php?created=1");
         exit;
@@ -210,7 +210,7 @@ form input[type="file"] {
         </div>
         <?php } ?>
 
-        <form method="POST" action="EOCreateEvent.php" enctype="multipart/form-data">
+        <form method="POST" action="eo_create_event.php" enctype="multipart/form-data">
 
             <div class="section-box">
                 <h2>Event Details</h2>
@@ -241,7 +241,7 @@ form input[type="file"] {
             </div>
 
             <button type="submit" class="btn-primary">Create Event</button>
-            <a href="EOEvents.php" class="btn-secondary">Cancel</a>
+            <a href="eo_events.php" class="btn-secondary">Cancel</a>
 
         </form>
 

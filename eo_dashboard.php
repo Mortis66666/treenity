@@ -1,6 +1,8 @@
 <?php
-session_start();
-require 'database.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once 'database.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'ORGANIZER') {
     header("Location: login.php");
@@ -53,13 +55,16 @@ include 'header.php';
     .eo-wrap {
         max-width: 1100px;
         margin: 30px auto;
-        padding: 0 20px;
+        padding: 0 20px 60px;
+        flex: 1;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .page-title {
-        font-size: 22px;
-        font-weight: 700;
-        color: #fff;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 32px;
+        color: #1b4332;
         margin-bottom: 20px;
     }
 
@@ -71,39 +76,37 @@ include 'header.php';
     }
 
     .stats-card {
-        background: #1a2236;
-        border: 1px solid #2c3e50;
-        border-radius: 10px;
-        padding: 16px;
+        background: #fff;
+        border: 1px solid #e0dacd;
+        border-radius: 8px;
+        padding: 18px;
     }
 
     .stats-card .val {
         font-size: 28px;
         font-weight: 700;
-        color: #fff;
+        color: #1b4332;
     }
 
     .stats-card .lbl {
         font-size: 12px;
-        color: #6b7a99;
+        color: #6b6355;
         margin-top: 4px;
     }
 
     .card {
-        background: #1a2236;
-        border: 1px solid #2c3e50;
-        border-radius: 10px;
-        padding: 18px;
+        background: #fff;
+        border: 1px solid #e0dacd;
+        border-radius: 8px;
+        padding: 22px;
         margin-bottom: 18px;
     }
 
     .card-title {
-        font-size: 13px;
-        font-weight: 600;
-        color: #6b7a99;
-        margin-bottom: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.5em;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 18px;
+        color: #1b4332;
+        margin-bottom: 16px;
     }
 
     table {
@@ -114,18 +117,19 @@ include 'header.php';
 
     th {
         text-align: left;
-        padding: 8px 10px;
-        color: #6b7a99;
+        padding: 10px;
+        color: #6b6355;
         font-size: 11px;
         font-weight: 600;
         text-transform: uppercase;
-        border-bottom: 1px solid #2c3e50;
+        letter-spacing: 0.04em;
+        border-bottom: 2px solid #e0dacd;
     }
 
     td {
-        padding: 8px 10px;
-        color: #c8d4e8;
-        border-bottom: 1px solid #1e2d42;
+        padding: 10px;
+        color: #33302a;
+        border-bottom: 1px solid #eee6d8;
     }
 
     tr:last-child td {
@@ -133,31 +137,31 @@ include 'header.php';
     }
 
     .badge {
-        font-size: 11px;
-        padding: 3px 8px;
+        font-size: 12px;
+        padding: 4px 10px;
         border-radius: 20px;
         font-weight: 600;
     }
 
     .badge-active {
-        background: #14532d;
-        color: #86efac;
+        background: #d8f0dc;
+        color: #1b4332;
     }
 
     .badge-ended {
-        background: #1f2937;
-        color: #6b7280;
-        border: 1px solid #374151;
+        background: #ece7dc;
+        color: #7a7264;
     }
 
     .badge-upcoming {
-        background: #1e3a8a;
-        color: #93c5fd;
+        background: #dbe8f5;
+        color: #1c4e80;
     }
 
     .btn-view {
-        font-size: 11px;
-        color: #4a9eff;
+        font-size: 13px;
+        font-weight: 600;
+        color: #1b4332;
         text-decoration: none;
     }
 
@@ -169,15 +173,16 @@ include 'header.php';
         display: flex;
         gap: 10px;
         margin-bottom: 24px;
+        flex-wrap: wrap;
     }
 
     .btn-primary {
-        background: #1a56db;
+        background: #1b4332;
         color: #fff;
         border: none;
         padding: 10px 18px;
-        border-radius: 7px;
-        font-size: 13px;
+        border-radius: 6px;
+        font-size: 14px;
         font-weight: 600;
         cursor: pointer;
         text-decoration: none;
@@ -185,16 +190,16 @@ include 'header.php';
     }
 
     .btn-primary:hover {
-        background: #1648c0;
+        background: #2d6a4f;
     }
 
     .btn-secondary {
-        background: #1e2236;
-        color: #c8d4e8;
-        border: 1px solid #2a3a50;
+        background: #f4f1ea;
+        color: #1b4332;
+        border: 1px solid #e0dacd;
         padding: 10px 18px;
-        border-radius: 7px;
-        font-size: 13px;
+        border-radius: 6px;
+        font-size: 14px;
         font-weight: 600;
         cursor: pointer;
         text-decoration: none;
@@ -202,7 +207,7 @@ include 'header.php';
     }
 
     .btn-secondary:hover {
-        background: #22304a;
+        background: #ece7d9;
     }
 
     @media (max-width: 768px) {
@@ -223,7 +228,7 @@ include 'header.php';
 </style>
 
 <div class="eo-wrap">
-    <div class="page-title">organizer Dashboard</div>
+    <div class="page-title">Organizer Dashboard</div>
 
     <!--stats-->
     <div class="stats-grid">
@@ -249,14 +254,14 @@ include 'header.php';
     <div class="quick-links">
         <a href="eo_create_event.php" class="btn-primary">Create New Event</a>
         <a href="eo_events.php" class="btn-secondary">View All Events</a>
-        <a href="eo_quest_customizer.php" class="btn-secondary">Quest Customizer</a>
+        <a href="eo_questcustomiser.php" class="btn-secondary">Quest Customizer</a>
         <a href="eo_inventory.php" class="btn-secondary">Inventory</a>
     </div>
 
     <div class="card">
         <div class="card-title">Recent Events</div>
         <?php if (empty($recent_events)): ?>
-            <p style="color:#6b7a99;font-size:13px;">No events yet. <a href="eo_create_event.php" style="color:#4a9eff;">Create one now.</a></p>
+            <p style="color:#6b6355;font-size:13px;">No events yet. <a href="eo_create_event.php" style="color:#1b4332;font-weight:600;">Create one now.</a></p>
         <?php else: ?>
             <table>
                 <thead>

@@ -1,8 +1,10 @@
 <?php
-session_start();
-require("database.php");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organizer') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANIZER') {
     header("Location: login.php");
     exit();
 }
@@ -10,8 +12,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
 $organizer_id = $_SESSION['user_id'];
 
 if (isset($_POST['delete_event_id'])) {
-    $delete_stmt = $pdo->prepare("DELETE FROM events WHERE event_id = ? AND organizer_id = ?");
-    $delete_stmt->execute(array($_POST['delete_event_id'], $organizer_id));
+    $conn->execute_query("DELETE FROM events WHERE event_id = ? AND organizer_id = ?", [$_POST['delete_event_id'], $organizer_id]);
     header("Location: eo_events.php?deleted=1");
     exit();
 }
@@ -31,9 +32,8 @@ if ($search != '') {
 
 $sql .= " GROUP BY e.event_id ORDER BY e.start_time DESC";
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$all_events = $stmt->fetchAll();
+$result = $conn->execute_query($sql, $params);
+$all_events = $result->fetch_all(MYSQLI_ASSOC);
 
 $events = array();
 $now = date("Y-m-d H:i:s");
@@ -261,7 +261,7 @@ foreach ($all_events as $ev) {
 
         <div class="page-header">
             <h1>Events Organised</h1>
-            <a href="eo_quest_customizer.php" class="btn-primary">Create Event</a>
+            <a href="eo_create_event.php" class="btn-primary">Create Event</a>
         </div>
 
         <?php if (isset($_GET['created'])) { ?>
@@ -302,7 +302,7 @@ foreach ($all_events as $ev) {
 
                 <div class="card-actions">
                     <a href="eo_participants.php?event_id=<?php echo $ev['event_id']; ?>">Participants</a>
-                    <a href="eo_quest_customizer.php?event_id=<?php echo $ev['event_id']; ?>">Quests</a>
+                    <a href="eo_questcustomiser.php?event_id=<?php echo $ev['event_id']; ?>">Quests</a>
                     <form method="POST" action="eo_events.php" onsubmit="return confirm('Delete this event?');">
                         <input type="hidden" name="delete_event_id" value="<?php echo $ev['event_id']; ?>">
                         <button type="submit">Delete</button>
