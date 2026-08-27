@@ -57,7 +57,7 @@ if ($role === "USER") {
     $completed_quests_result = $conn->execute_query(
         "SELECT DISTINCT q.name, q.quest_icon_id, e.name AS event_name
          FROM participants p
-         INNER JOIN quest_progress qp ON qp.participant_id = p.participant_id AND qp.is_claimed = 1
+         INNER JOIN quest_progress qp ON qp.participant_id = p.participant_id AND qp.rewarded_at IS NOT NULL
          INNER JOIN quests q ON q.quest_id = qp.quest_id
          INNER JOIN events e ON e.event_id = q.event_id
          WHERE p.user_id = ?

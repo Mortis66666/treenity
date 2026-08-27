@@ -88,6 +88,13 @@
     white-space: nowrap;
 }
 
+.quest-description {
+    margin: -8px 0 18px;
+    color: #526366;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
 .quest-progress {
     height: 8px;
     overflow: hidden;

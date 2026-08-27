@@ -35,11 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'create') {
         $event_id = (int)$_POST['event_id'];
         $type = trim($_POST['type']);
+        $description = trim($_POST['description'] ?? '');
         $requirement = (int)$_POST['requirement'];
         $reward_points = (int)$_POST['reward_points'];
 
         if ($type == '') {
             $errors[] = "Quest type is required.";
+        }
+        if ($description == '') {
+            $errors[] = "Quest description is required.";
         }
         if ($requirement <= 0) {
             $errors[] = "Requirement must be greater than 0.";
@@ -49,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         }
 
         if (count($errors) == 0) {
-            $conn->execute_query("INSERT INTO quests (event_id, type, requirement, reward_points) VALUES (?, ?, ?, ?)", [$event_id, $type, $requirement, $reward_points]);
+            $conn->execute_query("INSERT INTO quests (event_id, description, type, requirement, reward_points) VALUES (?, ?, ?, ?, ?)", [$event_id, $description, $type, $requirement, $reward_points]);
             $success = "Quest created successfully!";
             $selected_event_id = $event_id;
         }
@@ -68,7 +72,7 @@ if ($selected_event_id > 0) {
     $quests = $quest_result->fetch_all(MYSQLI_ASSOC);
 }
 
-$quest_types = array('CHECK_IN', 'PHOTO', 'DISTANCE', 'LOG', 'COMPLETION');
+$quest_types = array('LOG_TOTAL', 'LOG_STREAK', 'HEIGHT');
 
 ?>
 
@@ -169,7 +173,8 @@ form label:first-of-type {
 }
 
 form select,
-form input[type="number"] {
+form input[type="number"],
+form textarea {
     width: 100%;
     padding: 9px 12px;
     border: 1px solid #d8cfc0;
@@ -179,8 +184,13 @@ form input[type="number"] {
     box-sizing: border-box;
 }
 
+form textarea {
+    resize: vertical;
+}
+
 form select:focus,
-form input:focus {
+form input:focus,
+form textarea:focus {
     outline: none;
     border-color: #1b4332;
 }
@@ -304,6 +314,9 @@ form input:focus {
                         <?php } ?>
                     </select>
 
+                    <label for="description">Quest Description</label>
+                    <textarea name="description" id="description" rows="4" placeholder="Describe this quest" required></textarea>
+
                     <label for="requirement">Requirement (number needed)</label>
                     <input type="number" name="requirement" id="requirement" min="1" placeholder="e.g. 3">
 
@@ -325,6 +338,7 @@ form input:focus {
                     <div class="quest-item">
                         <div class="quest-info">
                             <p class="quest-type"><?php echo htmlspecialchars($q['type']); ?></p>
+                            <p class="quest-description"><?php echo htmlspecialchars($q['description'] ?? ''); ?></p>
                             <p class="quest-meta">
                                 Requirement: <b><?php echo $q['requirement']; ?></b> &nbsp;|&nbsp;
                                 Reward: <b><?php echo $q['reward_points']; ?> pts</b>

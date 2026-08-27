@@ -15,7 +15,7 @@ $log_date_row = $log_date_result->fetch_assoc();
 $log_date_column = $log_date_row['column_name'] ?? null;
 
 $quest_result = $conn->execute_query(
-    "SELECT q.quest_id, q.name, q.type, q.requirement, q.reward_points, q.quest_icon_id,
+    "SELECT q.quest_id, q.name, q.description, q.type, q.requirement, q.reward_points, q.quest_icon_id,
             e.event_id, e.name AS event_name,
             p.participant_id, COALESCE(qp.value, 0) AS stored_progress
      FROM quests q
@@ -86,9 +86,9 @@ foreach ($quests as $quest) {
     try {
         $conn->begin_transaction();
         $conn->execute_query(
-            "INSERT INTO quest_progress (participant_id, quest_id, is_claimed)
-             VALUES (?, ?, 1)
-             ON DUPLICATE KEY UPDATE is_claimed = IF(is_claimed = 0, 1, is_claimed)",
+            "INSERT INTO quest_progress (participant_id, quest_id, rewarded_at)
+             VALUES (?, ?, NOW())
+             ON DUPLICATE KEY UPDATE rewarded_at = IF(rewarded_at IS NULL, NOW(), rewarded_at)",
             [(int) $quest['participant_id'], (int) $quest['quest_id']]
         );
 
@@ -150,6 +150,7 @@ foreach ($quests as $quest) {
                         </div>
                         <h2><?= htmlspecialchars($quest['name'], ENT_QUOTES, 'UTF-8') ?></h2>
                         <p class="quest-event"><?= htmlspecialchars($quest['event_name'], ENT_QUOTES, 'UTF-8') ?></p>
+                        <p class="quest-description"><?= nl2br(htmlspecialchars($quest['description'] ?? '', ENT_QUOTES, 'UTF-8')) ?></p>
                         <div class="quest-progress" aria-label="<?= $percentage ?> percent complete">
                             <span style="width: <?= $percentage ?>%"></span>
                         </div>
