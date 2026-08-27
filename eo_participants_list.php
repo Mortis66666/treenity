@@ -30,9 +30,9 @@ if ($event_id > 0) {
 
 $my_events_result = $conn->execute_query(
     "SELECT event_id, name 
-     FROM events 
-     WHERE organizer_id = ? 
-     ORDER BY start_time DESC",
+    FROM events 
+    WHERE organizer_id = ? 
+    ORDER BY start_time DESC",
     [$organizer_id]
 );
 
@@ -63,7 +63,7 @@ if ($event_id > 0) {
     }
 
     $sql .= " GROUP BY p.participant_id
-              ORDER BY u.name ASC";
+            ORDER BY u.name ASC";
 
     $result = $conn->execute_query($sql, $params);
 
@@ -75,13 +75,13 @@ $points_by_participant = array();
 if ($event_id > 0 && count($participants) > 0) {
 
     $points_result = $conn->execute_query(
-        "SELECT 
+        "SELECT
             qp.participant_id,
             SUM(qp.value * q.reward_points) AS total_points
-         FROM quest_progress qp
-         JOIN quests q ON qp.quest_id = q.quest_id
-         WHERE q.event_id = ?
-         GROUP BY qp.participant_id",
+        FROM quest_progress qp
+        JOIN quests q ON qp.quest_id = q.quest_id
+        WHERE q.event_id = ?
+        GROUP BY qp.participant_id",
         [$event_id]
     );
 
@@ -252,7 +252,6 @@ if ($event_id > 0 && count($participants) > 0) {
 
         <h1>Participant List</h1>
 
-        <!-- Event Selection -->
         <form method="GET" action="eo_participants_list.php" class="event-select-form">
 
             <label for="event_id">

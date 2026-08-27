@@ -1,0 +1,130 @@
+.event-page {
+    box-sizing: border-box;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 52px 24px 64px;
+}
+
+.event-detail {
+    overflow: hidden;
+    border: 1px solid #d9dfe2;
+    border-radius: 6px;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(36, 52, 56, 0.08);
+}
+
+.event-detail-banner {
+    display: block;
+    width: 100%;
+    max-height: 360px;
+    object-fit: cover;
+    background: #e9eff0;
+}
+
+.event-detail-body {
+    padding: 34px;
+}
+
+.event-detail-heading h1 {
+    margin: 14px 0 8px;
+    color: #183e32;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+.event-organizer {
+    margin: 0;
+    color: #68777a;
+    font-size: 14px;
+}
+
+.event-description {
+    margin: 30px 0;
+    color: #526366;
+    font-size: 17px;
+    line-height: 1.7;
+    white-space: normal;
+}
+
+.event-details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin: 0 0 30px;
+}
+
+.event-details div {
+    padding: 16px;
+    border-left: 3px solid #d9a441;
+    background: #f1f6f4;
+}
+
+.event-details dt {
+    margin-bottom: 7px;
+    color: #68777a;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.event-details dd {
+    margin: 0;
+    color: #243438;
+    font-size: 14px;
+}
+
+.register-button {
+    border: 0;
+    border-radius: 3px;
+    padding: 14px 24px;
+    background: #39706e;
+    color: #ffffff;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+}
+
+.register-button:hover,
+.register-button:focus-visible {
+    background: #285c45;
+    outline: 2px solid #d9a441;
+    outline-offset: 3px;
+}
+
+.event-message,
+.registered-message,
+.event-login-message {
+    padding: 12px 14px;
+    font-size: 14px;
+}
+
+.success-message,
+.registered-message {
+    background: #e2efea;
+    color: #245a50;
+}
+
+.error-message {
+    background: #f9e8df;
+    color: #74351f;
+}
+
+.event-login-message {
+    background: #fff1d6;
+    color: #8a5a12;
+}
+
+@media (max-width: 650px) {
+    .event-page {
+        padding: 36px 16px 44px;
+    }
+
+    .event-detail-body {
+        padding: 24px 18px;
+    }
+
+    .event-details {
+        grid-template-columns: 1fr;
+    }
+}

@@ -11,7 +11,6 @@ $errors = [];
 $success = '';
 $name = trim($_POST['name'] ?? '');
 $description = trim($_POST['description'] ?? '');
-$verification_code = trim($_POST['verification_code'] ?? '');
 $start_time = trim($_POST['start_time'] ?? '');
 $end_time = trim($_POST['end_time'] ?? '');
 
@@ -21,9 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if ($description === '') {
         $errors[] = 'Event description is required.';
-    }
-    if ($verification_code === '') {
-        $errors[] = 'Verification code is required.';
     }
     if ($start_time === '') {
         $errors[] = 'Start date/time is required.';
@@ -51,12 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $conn->execute_query(
                 "INSERT INTO events
-                    (banner_id, organizer_id, name, description, verification_code, start_time, end_time, is_published)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
-                [$banner_id, (int) $_SESSION['user_id'], $name, $description, $verification_code, $start_time, $end_time]
+                    (banner_id, organizer_id, name, description, start_time, end_time, is_published)
+                 VALUES (?, ?, ?, ?, ?, ?, 0)",
+                [$banner_id, (int) $_SESSION['user_id'], $name, $description, $start_time, $end_time]
             );
             $success = 'Event proposal submitted successfully.';
-            $name = $description = $verification_code = $start_time = $end_time = '';
+            $name = $description = $start_time = $end_time = '';
         } catch (Throwable $exception) {
             $errors[] = 'Unable to submit the event proposal.';
         }
@@ -112,11 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-field">
                     <label for="banner">Banner image</label>
                     <input id="banner" name="banner" type="file" accept="image/jpeg,image/png,image/gif,image/webp">
-                </div>
-
-                <div class="form-field">
-                    <label for="verification_code">Verification code</label>
-                    <input id="verification_code" name="verification_code" type="text" maxlength="20" value="<?= htmlspecialchars($verification_code, ENT_QUOTES, 'UTF-8') ?>" required>
                 </div>
 
                 <div class="time-fields">
