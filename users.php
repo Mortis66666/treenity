@@ -189,21 +189,21 @@ $table_headers = [
                         echo '<tr class="clickable-row" tabindex="0" role="link" data-profile-url="' . $profile_url_attribute . '" onclick="if (!event.target.closest(\'input, select, button, form, a\')) window.location.href = this.dataset.profileUrl;" onkeydown="if ((event.key === \'Enter\' || event.key === \' \') && !event.target.closest(\'input, select, button, form, a\')) { event.preventDefault(); window.location.href = this.dataset.profileUrl; }">';
                         foreach ($table_headers as $column => $label) {
                             if ($column === 'username' || $column === 'tp_number') {
-                                echo '<td>';
+                                echo '<td data-label="' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '">';
                                 echo '<input form="edit-' . (int) $row['user_id'] . '" name="' . $column . '" value="' . htmlspecialchars($row[$column], ENT_QUOTES, 'UTF-8') . '">';
                                 echo '</td>';
                             } elseif ($column === 'role') {
-                                echo '<td><select form="edit-' . (int) $row['user_id'] . '" name="role">';
+                                echo '<td data-label="' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '"><select form="edit-' . (int) $row['user_id'] . '" name="role">';
                                 foreach ($roles as $role) {
                                     $selected = $role === $row['role'] ? ' selected' : '';
                                     echo '<option value="' . htmlspecialchars($role, ENT_QUOTES, 'UTF-8') . '"' . $selected . '>' . htmlspecialchars($role, ENT_QUOTES, 'UTF-8') . '</option>';
                                 }
                                 echo '</select></td>';
                             } else {
-                                echo "<td>" . htmlspecialchars($row[$column], ENT_QUOTES, 'UTF-8') . "</td>";
+                                echo '<td data-label="' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($row[$column], ENT_QUOTES, 'UTF-8') . '</td>';
                             }
                         }
-                        echo '<td class="user-actions">';
+                        echo '<td class="user-actions" data-label="Actions">';
                         echo '<form id="edit-' . (int) $row['user_id'] . '" method="post">';
                         echo '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') . '">';
                         echo '<input type="hidden" name="action" value="update">';
