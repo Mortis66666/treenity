@@ -63,6 +63,10 @@
 
 .info-desc {
 	min-height: 42px;
+
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .stock-low {
@@ -128,6 +132,15 @@
 .redeem-button:focus-visible {
 	background: #285654;
 	transform: translateY(-1px);
+}
+
+.add-stock-button {
+	background: #a85d32;
+}
+
+.add-stock-button:hover,
+.add-stock-button:focus-visible {
+	background: #874724;
 }
 
 .sold-out,
