@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     [$item_id]
                 );
                 $user_result = $is_user ? $conn->execute_query(
-                    "SELECT total_points FROM users WHERE user_id = ? FOR UPDATE",
+                    "SELECT current_points FROM users WHERE user_id = ? FOR UPDATE",
                     [$_SESSION['user_id']]
                 ) : null;
 
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($quantity > (int) $item['stock_left']) {
                         throw new RuntimeException('There is not enough stock for that quantity.');
                     }
-                    if ($total_cost > (int) $user['total_points']) {
+                    if ($total_cost > (int) $user['current_points']) {
                         throw new RuntimeException('You do not have enough points for that quantity.');
                     }
 
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         [$quantity, $item_id]
                     );
                     $conn->execute_query(
-                        "UPDATE users SET total_points = total_points - ? WHERE user_id = ?",
+                        "UPDATE users SET current_points = current_points - ? WHERE user_id = ?",
                         [$total_cost, $_SESSION['user_id']]
                     );
                     $conn->execute_query(
@@ -107,9 +107,9 @@ $result = $conn->execute_query($sql);
 
 $user_points = null;
 if ($is_user) {
-    $user_result = $conn->execute_query("SELECT total_points FROM users WHERE user_id = ?", [$_SESSION['user_id']]);
+    $user_result = $conn->execute_query("SELECT current_points FROM users WHERE user_id = ?", [$_SESSION['user_id']]);
     $user = $user_result->fetch_assoc();
-    $user_points = $user ? (int) $user['total_points'] : 0;
+    $user_points = $user ? (int) $user['current_points'] : 0;
 }
 ?>
 

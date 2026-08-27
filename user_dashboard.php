@@ -37,7 +37,7 @@ $future_events_result = $conn->execute_query(
         </div>
 
         <nav class="dashboard-actions" aria-label="Dashboard shortcuts">
-            <a href="achievements.php">Achievements</a>
+            <a href="quests.php">Your Quests</a>
             <a href="event_history.php">Your Event<br>History</a>
             <a href="inventory.php">Your Claimed<br>Rewards</a>
             <a href="plant_growth.php">Upload Plant<br>Growth Updates</a>
