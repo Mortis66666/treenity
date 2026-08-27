@@ -32,6 +32,25 @@ if ($item['user_id'] !== $_SESSION['user_id'] && $_SESSION['role'] !== 'ADMIN') 
     header("Location: not_found.php");
     exit();
 }
+
+$csrf_token = $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'mark_owned') {
+    check_user_role(['ADMIN']);
+
+    if (!hash_equals($csrf_token, $_POST['csrf_token'] ?? '')) {
+        http_response_code(400);
+        exit('Invalid request.');
+    }
+
+    $conn->execute_query(
+        "UPDATE inventory SET status = 'OWNED', claimed_at = NOW() WHERE inventory_id = ? AND status = 'PENDING'",
+        [$item['inventory_id']]
+    );
+
+    header("Location: inventory_item.php?item_id=" . $item_id);
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -85,6 +104,14 @@ if ($item['user_id'] !== $_SESSION['user_id'] && $_SESSION['role'] !== 'ADMIN') 
                 </dl>
             </div>
         </article>
+
+        <?php if ($_SESSION['role'] === 'ADMIN' && $item['status'] !== 'OWNED'): ?>
+            <form class="inventory-item-action" method="post">
+                <input type="hidden" name="action" value="mark_owned">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>">
+                <button class="qr-code-toggle" type="submit">Mark as owned</button>
+            </form>
+        <?php endif; ?>
 
         <section class="inventory-item-qr" aria-labelledby="qr-code-title">
             <button class="qr-code-toggle" id="qr-code-toggle" type="button" aria-controls="qr-code" aria-expanded="false">

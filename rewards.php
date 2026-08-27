@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         [$total_cost, $_SESSION['user_id']]
                     );
                     $conn->execute_query(
-                        "INSERT INTO inventory (user_id, item_id, amount, purchased_at) VALUES (?, ?, ?, NOW())",
+                        "INSERT INTO inventory (user_id, item_id, amount, purchased_at, STATUS) VALUES (?, ?, ?, NOW(), 'PENDING')",
                         [$_SESSION['user_id'], $item_id, $quantity]
                     );
                     $message = "Redeemed {$quantity} x " . $item['name'] . " for {$total_cost} points.";
