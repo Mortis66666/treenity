@@ -31,27 +31,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Treenity</title>
 
     <?php include("global.php"); ?>
-    <link rel="stylesheet" href="styles/login.css">
+    <link rel="stylesheet" href="styles/login.css?v=5">
+    <link rel="stylesheet" href="styles/signup.css?v=2">
 </head>
 
 <body>
     <?php include("header.php"); ?>
 
-    <main class="content login-page">
-        <!-- <section class="login-intro" aria-labelledby="login-title">
-            <p class="login-kicker">Welcome back to the grove</p>
-            <h1 id="login-title">Keep growing with your community.</h1>
-            <p>Sign in to follow your planting journey, discover new events, and see the good work taking root around you.</p>
-            <span class="login-mark" aria-hidden="true">✳</span>
-        </section> -->
-
-        <section class="login-panel" aria-label="Sign in form">
-            <div class="login-panel-heading">
+    <main class="content signup-page">
+        <section class="signup-panel" aria-label="Sign in form">
+            <div class="signup-panel-heading">
                 <span class="panel-eyebrow">Your Treenity account</span>
-                <h2>Sign in</h2>
+                <h1>Sign in</h1>
             </div>
 
             <?php if (isset($_SESSION['error'])): ?>
@@ -65,16 +61,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php endif; ?>
 
             <form action="<?= htmlspecialchars($_SERVER["PHP_SELF"], ENT_QUOTES, 'UTF-8') ?>" method="post">
-                <label for="username">Username</label>
-                <input type="text" placeholder="Enter your username" id="username" name="username" autocomplete="username" required>
+                <div class="signup-form-grid">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" placeholder="Enter your username" id="username" name="username" autocomplete="username" required>
+                    </div>
 
-                <label for="password">Password</label>
-                <input type="password" placeholder="Enter your password" id="password" name="password" autocomplete="current-password" required>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" placeholder="Enter your password" id="password" name="password" autocomplete="current-password" required>
+                    </div>
+                </div>
 
-                <button type="submit">Log in <span aria-hidden="true">&#8599;</span></button>
+                <button class="signup-submit" type="submit">Log in <span aria-hidden="true">&#8599;</span></button>
             </form>
 
-            <p class="login-signup">New to Treenity? <a href="signup.php">Create an account</a></p>
+            <p class="signup-footer">New to Treenity? <a href="signup.php">Create an account</a></p>
         </section>
     </main>
 

@@ -1,15 +1,9 @@
-.content {
-    margin-top: 30px !important;
-}
-
-
 .login-page {
     align-items: stretch;
     justify-content: center;
-    gap: 7vw;
     box-sizing: border-box;
-    min-height: calc(100vh - 70px);
-    padding: 90px max(7vw, 32px);
+    min-height: calc(100dvh - 70px);
+    padding: 64px 24px 80px;
     background: #e6efe7;
     color: #20352f;
 
@@ -18,7 +12,7 @@
 .login-intro,
 .login-panel {
     width: 100%;
-    max-width: 510px;
+    max-width: 720px;
 }
 
 .login-intro {
@@ -184,22 +178,17 @@
     color: #245a50;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 600px) {
     .login-page {
-        gap: 54px;
-        padding: 70px 24px 80px;
-    }
-
-    .login-intro h1 {
-        font-size: clamp(42px, 13vw, 60px);
-    }
-
-    .login-mark {
-        margin-top: 22px;
+        padding: 48px 16px 64px;
     }
 
     .login-panel {
-        padding: 30px 24px;
-        box-shadow: 8px 8px 0 #c8d8ce;
+        padding: 32px 24px;
+        box-shadow: 10px 10px 0 #c8d8ce;
+    }
+
+    .login-panel h2 {
+        font-size: 36px;
     }
 }
