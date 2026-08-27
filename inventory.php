@@ -25,12 +25,12 @@ if (!$user) {
 }
 
 $inventory_result = $conn->execute_query(
-    "SELECT inventory.item_id, inventory.amount, inventory.claimed_at,
+    "SELECT inventory.item_id, inventory.amount, inventory.claimed_at, inventory.status,
             store.name, store.description, store.image_id, store.cost
      FROM inventory
      INNER JOIN store ON store.item_id = inventory.item_id
      WHERE inventory.user_id = ?
-     ORDER BY inventory.claimed_at IS NOT NULL ASC, inventory.claimed_at DESC, inventory.item_id DESC",
+     ORDER BY inventory.status = 'OWNED' ASC, inventory.claimed_at DESC, inventory.item_id DESC",
     [$target_user_id]
 );
 
@@ -38,12 +38,13 @@ $pending_items = [];
 $claimed_items = [];
 $all_items = [];
 while ($item = $inventory_result->fetch_assoc()) {
-    if ($item['claimed_at'] === null) {
-        $pending_items[] = $item;
-    } else {
+    if ($item['status'] === 'OWNED') {
         $claimed_items[] = $item;
+        $all_items[] = $item;
+    } elseif ($item['status'] === 'PENDING') {
+        $pending_items[] = $item;
+        $all_items[] = $item;
     }
-    $all_items[] = $item;
 }
 
 function showInventoryItems(array $items): void
@@ -64,9 +65,9 @@ function showInventoryItems(array $items): void
         echo '<div class="info-row info-desc">' . htmlspecialchars($item['description'], ENT_QUOTES, 'UTF-8') . '</div>';
         echo '<div class="info-row">Quantity: ' . (int) $item['amount'] . '</div>';
         echo '<div class="info-row">Cost: ' . (int) $item['cost'] . ' points each</div>';
-        if ($item['claimed_at'] !== null) {
+        if ($item['status'] === 'OWNED') {
             echo '<div class="claimed-date" style="color: #39706e;">Claimed: ' . htmlspecialchars($item['claimed_at'], ENT_QUOTES, 'UTF-8') . '</div>';
-        } else {
+        } elseif ($item['status'] === 'PENDING') {
             echo '<div class="pending-label" style="color: #d9a441;"><b>Pending</b></div>';
         }
         echo '</div></a>';
