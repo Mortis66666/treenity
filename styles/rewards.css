@@ -18,6 +18,29 @@
 	padding-bottom: 2px;
 }
 
+.rewards-title-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+}
+
+.add-reward-button {
+	display: inline-block;
+	padding: 12px 16px;
+	background: #39706e;
+	color: #ffffff;
+	font-weight: 700;
+	text-decoration: none;
+	transition: background 160ms ease, transform 160ms ease;
+}
+
+.add-reward-button:hover,
+.add-reward-button:focus-visible {
+	background: #285654;
+	transform: translateY(-1px);
+}
+
 .points-balance {
 	margin: 8px 0 0;
 	color: #39706e;
@@ -189,6 +212,12 @@
 
 	.rewards-heading {
 		padding-bottom: 16px;
+	}
+
+	.rewards-title-row {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 12px;
 	}
 
 	.points-balance {

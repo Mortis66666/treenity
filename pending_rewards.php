@@ -1,6 +1,6 @@
 <?php
 include_once("check_user.php");
-checkUserRole(['ADMIN']);
+check_user_role(['ADMIN']);
 
 $pending_result = $conn->execute_query(
     "SELECT inventory.inventory_id, inventory.user_id, inventory.item_id,

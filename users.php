@@ -3,7 +3,7 @@ include_once("database.php");
 include_once("check_user.php");
 include("pagination.php");
 
-checkUserRole(['ADMIN']); // Only allow users with the 'ADMIN' role to access this page
+check_user_role(['ADMIN']); // Only allow users with the 'ADMIN' role to access this page
 
 $csrf_token = $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 $action_error = '';

@@ -1,6 +1,8 @@
 <?php
 include_once("check_user.php");
 
+check_user_role(['ADMIN', 'USER']);
+
 $item_id = filter_input(INPUT_GET, 'item_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
 if (!$item_id) {
@@ -9,7 +11,7 @@ if (!$item_id) {
 }
 
 $item_result = $conn->execute_query(
-    "SELECT inventory.amount, inventory.purchased_at, inventory.claimed_at, inventory.status,
+    "SELECT inventory.amount, inventory.purchased_at, inventory.claimed_at, inventory.status, inventory.user_id,
             store.name, store.description, store.cost, store.image_id
      FROM inventory
      INNER JOIN store ON store.item_id = inventory.item_id
@@ -20,7 +22,13 @@ $item_result = $conn->execute_query(
 );
 $item = $item_result->fetch_assoc();
 
+
 if (!$item) {
+    header("Location: not_found.php");
+    exit();
+}
+
+if ($item['user_id'] !== $_SESSION['user_id'] && $_SESSION['role'] !== 'ADMIN') {
     header("Location: not_found.php");
     exit();
 }

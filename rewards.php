@@ -131,7 +131,12 @@ if ($is_user) {
     <main class="content rewards-page">
 
         <div class="rewards-heading">
-            <h1>Rewards</h1>
+            <div class="rewards-title-row">
+                <h1>Rewards</h1>
+                <?php if ($is_admin) : ?>
+                    <a class="add-reward-button" href="new_item.php">Add new reward</a>
+                <?php endif; ?>
+            </div>
             <?php if ($is_user) : ?>
                 <p class="points-balance">Your point balance : <strong><?php echo htmlspecialchars($user_points); ?> points</strong></p>
             <?php endif; ?>

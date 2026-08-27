@@ -2,7 +2,7 @@
 include_once("database.php");
 include_once("check_user.php");
 
-checkUserRole(['ADMIN']);
+check_user_role(['ADMIN']);
 
 $csrf_token = $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 $action_error = '';
