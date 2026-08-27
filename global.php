@@ -5,3 +5,4 @@ header("Pragma: no-cache");
 ?>
 
 <link rel="stylesheet" href="styles/global.css">
+<link rel="icon" href="images/assets/logo.svg" type="image/x-icon">

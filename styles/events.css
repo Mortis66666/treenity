@@ -46,6 +46,34 @@
     text-align: center;
 }
 
+.events-tabs {
+    width: 100%;
+}
+
+.events-tabs .tab-list {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.events-tabs .tab-button {
+    border: 0;
+    border-radius: 999px;
+    padding: 6px 16px;
+    background: #d9dfe2;
+    color: #243438;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+}
+
+.events-tabs .tab-button.is-active,
+.events-tabs .tab-button:hover,
+.events-tabs .tab-button:focus-visible {
+    background: #39706e;
+    color: #ffffff;
+}
+
 @media (max-width: 600px) {
     .events-page {
         gap: 22px;
@@ -54,5 +82,9 @@
 
     .event-list {
         grid-template-columns: 1fr;
+    }
+
+    .events-tabs .tab-list {
+        flex-wrap: wrap;
     }
 }
