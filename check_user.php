@@ -21,7 +21,7 @@ if ($result->num_rows === 0) {
     exit();
 }
 
-function checkUserRole($requiredRoles)
+function check_user_role($requiredRoles)
 {
     global $conn;
     $userId = $_SESSION['user_id'];

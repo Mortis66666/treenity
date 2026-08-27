@@ -2,7 +2,7 @@
 include_once("database.php");
 include_once("check_user.php");
 
-checkUserRole(['ADMIN']);
+check_user_role(['ADMIN']);
 
 $error_message = '';
 $success_message = '';

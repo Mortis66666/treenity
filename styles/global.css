@@ -18,6 +18,10 @@ body {
     flex-direction: column;
 }
 
+.hidden {
+    display: none !important;
+}
+
 .content {
     position: relative;
     margin-top: 70px;

@@ -13,7 +13,6 @@ $event_result = $conn->execute_query(
     "SELECT DISTINCT e.event_id, e.name, p.participant_id
      FROM events e
      INNER JOIN participants p ON p.event_id = e.event_id AND p.user_id = ?
-     INNER JOIN logs l ON l.participant_id = p.participant_id
      ORDER BY e.start_time DESC, e.event_id DESC",
     [$user_id]
 );
@@ -93,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <?php if (!$events): ?>
-                <p class="growth-empty">No events with plant logs are available yet.</p>
+                <p class="growth-empty">No events are available yet.</p>
             <?php else: ?>
                 <form class="growth-form" method="post" enctype="multipart/form-data">
                     <label for="event_id">Choose an event</label>
