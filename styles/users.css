@@ -363,3 +363,90 @@
         text-align: center;
     }
 }
+
+@media (max-width: 700px) {
+    .page-title-bar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .create-user-button {
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .users-list {
+        overflow-x: visible;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .users-list table,
+    .users-list tbody,
+    .users-list tr,
+    .users-list td {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .users-list thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .users-list tbody tr {
+        margin-bottom: 16px;
+        padding: 12px 16px;
+        border: 1px solid #d9dfe2;
+        border-radius: 6px;
+        background: #ffffff;
+        box-shadow: 0 8px 22px rgba(36, 52, 56, 0.08);
+    }
+
+    .users-list tbody tr:last-child {
+        margin-bottom: 0;
+    }
+
+    .users-list td,
+    .users-list th:first-child,
+    .users-list td:first-child {
+        width: 100%;
+        padding: 9px 0;
+        border-bottom: 1px solid #e7ecec;
+        text-align: left;
+    }
+
+    .users-list td::before {
+        display: block;
+        margin-bottom: 5px;
+        color: #526366;
+        content: attr(data-label);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+    }
+
+    .users-list td:last-child {
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+
+    .users-list td input,
+    .users-list td select {
+        min-width: 0;
+    }
+
+    .user-actions {
+        justify-content: flex-start;
+    }
+}
