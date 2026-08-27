@@ -2,11 +2,10 @@
 session_start();
 require 'database.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'organizer') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'ORGANIZER') {
     header("Location: login.php");
     exit();
 }
-
 $organizer_id = $_SESSION['user_id'];
 
 $result = $conn->execute_query("SELECT COUNT(*) AS total_events FROM events WHERE organizer_id = ?", [$organizer_id]);
