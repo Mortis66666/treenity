@@ -2,20 +2,20 @@
 session_start();
 require("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANISER') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organizer') {
     header("Location: login.php");
     exit();
 }
 
-$organiser_id = $_SESSION['user_id'];
+$organizer_id = $_SESSION['user_id'];
 $participant_id = isset($_GET['participant_id']) ? (int)$_GET['participant_id'] : 0;
 
 $stmt = $pdo->prepare("SELECT p.participant_id, u.name, u.email, u.tp_number, e.name AS event_name, e.event_id
                         FROM participants p
                         JOIN users u ON p.user_id = u.user_id
                         JOIN events e ON p.event_id = e.event_id
-                        WHERE p.participant_id = ? AND e.organiser_id = ?");
-$stmt->execute(array($participant_id, $organiser_id));
+                        WHERE p.participant_id = ? AND e.organizer_id = ?");
+$stmt->execute(array($participant_id, $organizer_id));
 $participant = $stmt->fetch();
 
 if (!$participant) {

@@ -2,17 +2,17 @@
 session_start();
 require("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organiser') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organizer') {
     header("Location: login.php");
     exit();
 }
 
-$organiser_id = $_SESSION['user_id'];
+$organizer_id = $_SESSION['user_id'];
 $success = '';
 $errors = array();
 
-$stmt = $pdo->prepare("SELECT event_id, name FROM events WHERE organiser_id = ? ORDER BY start_time DESC");
-$stmt->execute(array($organiser_id));
+$stmt = $pdo->prepare("SELECT event_id, name FROM events WHERE organizer_id = ? ORDER BY start_time DESC");
+$stmt->execute(array($organizer_id));
 $my_events = $stmt->fetchAll();
 
 $selected_event_id = 0;
@@ -23,8 +23,8 @@ if (isset($_GET['event_id'])) {
 }
 
 if ($selected_event_id > 0) {
-    $check_stmt = $pdo->prepare("SELECT event_id FROM events WHERE event_id = ? AND organiser_id = ?");
-    $check_stmt->execute(array($selected_event_id, $organiser_id));
+    $check_stmt = $pdo->prepare("SELECT event_id FROM events WHERE event_id = ? AND organizer_id = ?");
+    $check_stmt->execute(array($selected_event_id, $organizer_id));
     if (!$check_stmt->fetch()) {
         $selected_event_id = 0;
     }
@@ -58,8 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 
     if ($_POST['action'] == 'delete') {
         $quest_id = (int)$_POST['quest_id'];
-        $delete_stmt = $pdo->prepare("DELETE q FROM quests q, events e WHERE q.event_id = e.event_id AND q.quest_id = ? AND e.organiser_id = ?");
-        $delete_stmt->execute(array($quest_id, $organiser_id));
+        $delete_stmt = $pdo->prepare("DELETE q FROM quests q, events e WHERE q.event_id = e.event_id AND q.quest_id = ? AND e.organizer_id = ?");
+        $delete_stmt->execute(array($quest_id, $organizer_id));
         $success = "Quest deleted.";
     }
 }

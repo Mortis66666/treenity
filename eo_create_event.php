@@ -2,12 +2,12 @@
 session_start();
 require("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANISER') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organizer') {
     header("Location: login.php");
     exit();
 }
 
-$organiser_id = $_SESSION['user_id'];
+$organizer_id = $_SESSION['user_id'];
 $errors = array();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -53,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (count($errors) == 0) {
-        $insert_event = $pdo->prepare("INSERT INTO events (banner_id, organiser_id, name, description, verification_code, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $insert_event->execute(array($banner_id, $organiser_id, $name, $description, $verification_code, $start_time, $end_time));
+        $insert_event = $pdo->prepare("INSERT INTO events (banner_id, organizer_id, name, description, verification_code, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $insert_event->execute(array($banner_id, $organizer_id, $name, $description, $verification_code, $start_time, $end_time));
 
         header("Location: eo_events.php?created=1");
         exit;

@@ -2,16 +2,16 @@
 session_start();
 require("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organiser') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organizer') {
     header("Location: login.php");
     exit();
 }
 
-$organiser_id = $_SESSION['user_id'];
+$organizer_id = $_SESSION['user_id'];
 
 if (isset($_POST['delete_event_id'])) {
-    $delete_stmt = $pdo->prepare("DELETE FROM events WHERE event_id = ? AND organiser_id = ?");
-    $delete_stmt->execute(array($_POST['delete_event_id'], $organiser_id));
+    $delete_stmt = $pdo->prepare("DELETE FROM events WHERE event_id = ? AND organizer_id = ?");
+    $delete_stmt->execute(array($_POST['delete_event_id'], $organizer_id));
     header("Location: eo_events.php?deleted=1");
     exit();
 }
@@ -21,8 +21,8 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 $sql = "SELECT e.event_id, e.name, e.start_time, e.end_time, e.verification_code, COUNT(p.participant_id) AS participant_count
         FROM events e LEFT JOIN participants p ON e.event_id = p.event_id
-        WHERE e.organiser_id = ?";
-$params = array($organiser_id);
+        WHERE e.organizer_id = ?";
+$params = array($organizer_id);
 
 if ($search != '') {
     $sql .= " AND e.name LIKE ?";

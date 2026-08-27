@@ -2,22 +2,22 @@
 session_start();
 require 'database.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'ORGANISER') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'organizer') {
     header("Location: login.php");
     exit();
 }
 
-$organiser_id = $_SESSION['user_id'];
+$organizer_id = $_SESSION['user_id'];
 
-$result = $conn->execute_query("SELECT COUNT(*) AS total_events FROM events WHERE organiser_id = ?", [$organiser_id]);
+$result = $conn->execute_query("SELECT COUNT(*) AS total_events FROM events WHERE organizer_id = ?", [$organizer_id]);
 $total_events = $result->fetch_assoc()['total_events'];
 
 $result = $conn->execute_query("
 SELECT COUNT(p.participant_id) as total
 from participants p
 JOIN events e ON p.event_id = e.event_id
-WHERE e.organiser_id = ?
-", [$organiser_id]);
+WHERE e.organizer_id = ?
+", [$organizer_id]);
 $total_participants = $result->fetch_assoc()['total'];
 
 $result = $conn->execute_query("
@@ -25,25 +25,25 @@ SELECT COUNT(l.log_id) as total
 FROM logs l
 JOIN participants p ON l.participant_id = p.participant_id
 JOIN events e ON p.event_id = e.event_id
-WHERE e.organiser_id = ?
-", [$organiser_id]);
+WHERE e.organizer_id = ?
+", [$organizer_id]);
 $total_logs = $result->fetch_assoc()['total'];
 
 $result = $conn->execute_query("
 SELECT COUNT(*) AS total from events
-WHERE organiser_id = ? AND start_time <= NOW() AND end_time >= NOW()
-", [$organiser_id]);
+WHERE organizer_id = ? AND start_time <= NOW() AND end_time >= NOW()
+", [$organizer_id]);
 $total_active_events = $result->fetch_assoc()['total'];
 
 $result = $conn->execute_query("
 SELECT e.event_id, e.name, e.start_time, e.end_time, COUNT(p.participant_id) AS participant_count
 FROM events e
 LEFT JOIN participants p ON e.event_id = p.event_id
-WHERE e.organiser_id = ?
+WHERE e.organizer_id = ?
 GROUP BY e.event_id
 ORDER BY e.last_updated DESC
 LIMIT 5
-", [$organiser_id]);
+", [$organizer_id]);
 $recent_events = $result->fetch_all(MYSQLI_ASSOC);
 
 include 'header.php';
@@ -224,7 +224,7 @@ include 'header.php';
 </style>
 
 <div class="eo-wrap">
-    <div class="page-title">organiser Dashboard</div>
+    <div class="page-title">organizer Dashboard</div>
 
     <!--stats-->
     <div class="stats-grid">

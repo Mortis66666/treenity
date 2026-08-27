@@ -2,27 +2,27 @@
 session_start();
 require("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organiser') {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'organizer') {
     header("Location: login.php");
     exit();
 }
 
-$organiser_id = $_SESSION['user_id'];
+$organizer_id = $_SESSION['user_id'];
 $event_id = isset($_GET['event_id']) ? (int)$_GET['event_id'] : 0;
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 $event = null;
 if ($event_id > 0) {
-    $event_stmt = $pdo->prepare("SELECT * FROM events WHERE event_id = ? AND organiser_id = ?");
-    $event_stmt->execute(array($event_id, $organiser_id));
+    $event_stmt = $pdo->prepare("SELECT * FROM events WHERE event_id = ? AND organizer_id = ?");
+    $event_stmt->execute(array($event_id, $organizer_id));
     $event = $event_stmt->fetch();
     if (!$event) {
         $event_id = 0;
     }
 }
 
-$my_events_stmt = $pdo->prepare("SELECT event_id, name FROM events WHERE organiser_id = ? ORDER BY start_time DESC");
-$my_events_stmt->execute(array($organiser_id));
+$my_events_stmt = $pdo->prepare("SELECT event_id, name FROM events WHERE organizer_id = ? ORDER BY start_time DESC");
+$my_events_stmt->execute(array($organizer_id));
 $my_events = $my_events_stmt->fetchAll();
 
 $participants = array();

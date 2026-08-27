@@ -2,12 +2,12 @@
 session_start();
 require 'database.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'organiser') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'organizer') {
     header("Location: login.php");
     exit();
 }
 
-$organiser_id = $_SESSION['user_id'];
+$organizer_id = $_SESSION['user_id'];
 $error = [];
 $success = '';
 
@@ -45,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($error)) {
-        $stmt = $pdo->prepare("INSERT INTO events (organiser_id, name, description, start_time, end_time, verification_code, banner_path) VALUES (:organiser_id, :name, :description, :start_time, :end_time, :verification_code, :banner_path)");
+        $stmt = $pdo->prepare("INSERT INTO events (organizer_id, name, description, start_time, end_time, verification_code, banner_path) VALUES (:organizer_id, :name, :description, :start_time, :end_time, :verification_code, :banner_path)");
         $stmt->execute([
-            ':organiser_id' => $organiser_id,
+            ':organizer_id' => $organizer_id,
             ':name' => $name,
             ':description' => $description,
             ':start_time' => $start_time,

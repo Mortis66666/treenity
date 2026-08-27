@@ -4,7 +4,7 @@ include_once("check_user.php");
 $pages = [
     "USER" => "user_dashboard.php",
     "ADMIN" => "admin_dashboard.php",
-    "organiser" => "organiser_dashboard.php"
+    "organizer" => "organizer_dashboard.php"
 ];
 
 $role = ($_SESSION['role'] ?? '');
