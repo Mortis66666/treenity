@@ -254,7 +254,6 @@ include 'header.php';
         <a href="eo_create_event.php" class="btn-primary">Create New Event</a>
         <a href="eo_events.php" class="btn-secondary">View All Events</a>
         <a href="eo_questcustomiser.php" class="btn-secondary">Quest Customizer</a>
-        <a href="eo_inventory.php" class="btn-secondary">Inventory</a>
     </div>
 
     <div class="card">
