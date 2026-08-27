@@ -11,7 +11,7 @@ if (!$item_id) {
 }
 
 $item_result = $conn->execute_query(
-    "SELECT inventory.amount, inventory.purchased_at, inventory.claimed_at, inventory.status, inventory.user_id,
+    "SELECT inventory.inventory_id, inventory.amount, inventory.purchased_at, inventory.claimed_at, inventory.status, inventory.user_id,
             store.name, store.description, store.cost, store.image_id
      FROM inventory
      INNER JOIN store ON store.item_id = inventory.item_id
@@ -85,9 +85,38 @@ if ($item['user_id'] !== $_SESSION['user_id'] && $_SESSION['role'] !== 'ADMIN') 
                 </dl>
             </div>
         </article>
+
+        <section class="inventory-item-qr" aria-labelledby="qr-code-title">
+            <button class="qr-code-toggle" id="qr-code-toggle" type="button" aria-controls="qr-code" aria-expanded="false">
+                Show QR code
+            </button>
+            <div class="qr-code" id="qr-code" hidden>
+                <h2 id="qr-code-title">Scan this item</h2>
+            </div>
+        </section>
     </main>
 
     <?php include("footer.php"); ?>
+
+    <script src="scripts/lib/qrcode.min.js"></script>
+
+    <script>
+        const qrCodeContainer = document.getElementById('qr-code');
+        const qrCodeToggle = document.getElementById('qr-code-toggle');
+        let qrCodeCreated = false;
+
+        qrCodeToggle.addEventListener('click', () => {
+            const isExpanded = qrCodeToggle.getAttribute('aria-expanded') === 'true';
+            qrCodeToggle.setAttribute('aria-expanded', String(!isExpanded));
+            qrCodeToggle.textContent = isExpanded ? 'Show QR code' : 'Hide QR code';
+            qrCodeContainer.hidden = isExpanded;
+
+            if (!isExpanded && !qrCodeCreated) {
+                new QRCode(qrCodeContainer, window.location.href);
+                qrCodeCreated = true;
+            }
+        });
+    </script>
 </body>
 
 </html>

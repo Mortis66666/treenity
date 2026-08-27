@@ -84,6 +84,55 @@
     color: #243438;
 }
 
+.inventory-item-qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin-top: 28px;
+}
+
+.qr-code-toggle {
+    border: 0;
+    padding: 13px 20px;
+    background: #39706e;
+    color: #ffffff;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    transition: background 160ms ease, transform 160ms ease;
+}
+
+.qr-code-toggle:hover,
+.qr-code-toggle:focus-visible {
+    background: #285654;
+    transform: translateY(-1px);
+}
+
+.qr-code {
+    width: min(100%, 280px);
+    box-sizing: border-box;
+    padding: 22px;
+    border: 1px solid #d9dfe2;
+    border-radius: 6px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.qr-code h2 {
+    margin: 0 0 16px;
+    color: #183e32;
+    font-size: 20px;
+}
+
+.qr-code img,
+.qr-code canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
 @media (max-width: 700px) {
     .inventory-item-page {
         padding: 30px 16px 44px;
