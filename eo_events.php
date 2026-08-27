@@ -20,7 +20,7 @@ if (isset($_POST['delete_event_id'])) {
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-$sql = "SELECT e.event_id, e.name, e.start_time, e.end_time, e.verification_code, COUNT(p.participant_id) AS participant_count
+$sql = "SELECT e.event_id, e.name, e.start_time, e.end_time, e.verification_code, e.status AS db_status, COUNT(p.participant_id) AS participant_count
         FROM events e LEFT JOIN participants p ON e.event_id = p.event_id
         WHERE e.organizer_id = ?";
 $params = array($organizer_id);
@@ -36,10 +36,15 @@ $result = $conn->execute_query($sql, $params);
 $all_events = $result->fetch_all(MYSQLI_ASSOC);
 
 $events = array();
+$draft_count = 0;
 $now = date("Y-m-d H:i:s");
 
 foreach ($all_events as $ev) {
-    if ($now < $ev['start_time']) {
+
+    if ($ev['db_status'] == 'draft') {
+        $status = "Draft";
+        $draft_count++;
+    } else if ($now < $ev['start_time']) {
         $status = "Upcoming";
     } else if ($now > $ev['end_time']) {
         $status = "Ended";
@@ -47,7 +52,13 @@ foreach ($all_events as $ev) {
         $status = "Active";
     }
 
-    if ($filter == 'all' || strtolower($filter) == strtolower($status)) {
+    if ($filter == 'all') {
+        // "All" shows everything except drafts - drafts have their own tab.
+        if ($status != "Draft") {
+            $ev['status'] = $status;
+            $events[] = $ev;
+        }
+    } else if (strtolower($filter) == strtolower($status)) {
         $ev['status'] = $status;
         $events[] = $ev;
     }
@@ -203,6 +214,11 @@ foreach ($all_events as $ev) {
     color: #1c4e80;
 }
 
+.status-draft {
+    background: #fbeacb;
+    color: #92620c;
+}
+
 .card-actions {
     display: flex;
     gap: 10px;
@@ -267,6 +283,9 @@ foreach ($all_events as $ev) {
         <?php if (isset($_GET['created'])) { ?>
             <div class="success-box">Event created successfully!</div>
         <?php } ?>
+        <?php if (isset($_GET['draft_saved'])) { ?>
+            <div class="success-box">Draft saved. You can come back and finish it any time.</div>
+        <?php } ?>
         <?php if (isset($_GET['deleted'])) { ?>
             <div class="success-box">Event deleted.</div>
         <?php } ?>
@@ -276,6 +295,7 @@ foreach ($all_events as $ev) {
             <a href="?filter=active" class="tab <?php if ($filter == 'active') echo 'active'; ?>">Active</a>
             <a href="?filter=upcoming" class="tab <?php if ($filter == 'upcoming') echo 'active'; ?>">Upcoming</a>
             <a href="?filter=ended" class="tab <?php if ($filter == 'ended') echo 'active'; ?>">Ended</a>
+            <a href="?filter=draft" class="tab <?php if ($filter == 'draft') echo 'active'; ?>">Drafts<?php if ($draft_count > 0) echo ' (' . $draft_count . ')'; ?></a>
         </div>
 
         <form method="GET" action="eo_events.php" class="search-form">
@@ -293,21 +313,40 @@ foreach ($all_events as $ev) {
             <div class="event-card">
                 <h3><?php echo htmlspecialchars($ev['name']); ?></h3>
                 <span class="status-tag status-<?php echo strtolower($ev['status']); ?>"><?php echo $ev['status']; ?></span>
-                <p>
-                    <?php echo date("d M Y, g:ia", strtotime($ev['start_time'])); ?> to
-                    <?php echo date("d M Y, g:ia", strtotime($ev['end_time'])); ?>
-                </p>
-                <p><?php echo $ev['participant_count']; ?> participants</p>
-                <p>Code: <b><?php echo htmlspecialchars($ev['verification_code']); ?></b></p>
 
-                <div class="card-actions">
-                    <a href="eo_participants.php?event_id=<?php echo $ev['event_id']; ?>">Participants</a>
-                    <a href="eo_questcustomiser.php?event_id=<?php echo $ev['event_id']; ?>">Quests</a>
-                    <form method="POST" action="eo_events.php" onsubmit="return confirm('Delete this event?');">
-                        <input type="hidden" name="delete_event_id" value="<?php echo $ev['event_id']; ?>">
-                        <button type="submit">Delete</button>
-                    </form>
-                </div>
+                <?php if ($ev['status'] == 'Draft') { ?>
+                    <p>Not published yet. Finish the details to make it live.</p>
+                    <?php if ($ev['start_time'] && $ev['end_time']) { ?>
+                        <p>
+                            <?php echo date("d M Y, g:ia", strtotime($ev['start_time'])); ?> to
+                            <?php echo date("d M Y, g:ia", strtotime($ev['end_time'])); ?>
+                        </p>
+                    <?php } ?>
+
+                    <div class="card-actions">
+                        <a href="eo_create_event.php?event_id=<?php echo $ev['event_id']; ?>">Continue Editing</a>
+                        <form method="POST" action="eo_events.php" onsubmit="return confirm('Delete this draft?');">
+                            <input type="hidden" name="delete_event_id" value="<?php echo $ev['event_id']; ?>">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </div>
+                <?php } else { ?>
+                    <p>
+                        <?php echo date("d M Y, g:ia", strtotime($ev['start_time'])); ?> to
+                        <?php echo date("d M Y, g:ia", strtotime($ev['end_time'])); ?>
+                    </p>
+                    <p><?php echo $ev['participant_count']; ?> participants</p>
+                    <p>Code: <b><?php echo htmlspecialchars($ev['verification_code']); ?></b></p>
+
+                    <div class="card-actions">
+                        <a href="eo_participants.php?event_id=<?php echo $ev['event_id']; ?>">Participants</a>
+                        <a href="eo_questcustomiser.php?event_id=<?php echo $ev['event_id']; ?>">Quests</a>
+                        <form method="POST" action="eo_events.php" onsubmit="return confirm('Delete this event?');">
+                            <input type="hidden" name="delete_event_id" value="<?php echo $ev['event_id']; ?>">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </div>
+                <?php } ?>
             </div>
             <?php } ?>
         </div>
