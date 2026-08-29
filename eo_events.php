@@ -588,7 +588,7 @@ foreach ($all_events as $ev) {
 
                     <div class="card-actions">
 
-                        <a href="eo_event_details.php?event_id=<?php echo (int)$ev['event_id']; ?>">
+                        <a href="event.php?event_id=<?php echo (int)$ev['event_id']; ?>">
                             View Details
                         </a>
 

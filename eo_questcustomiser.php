@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once("database.php");
 
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'ORGANIZER') {
-    header("Location: ../login.php");
+    header("Location: login.php");
     exit();
 }
 
@@ -16,10 +16,20 @@ $organizer_id = $_SESSION['user_id'];
 $error = '';
 $success = '';
 
+$events_result = $conn->execute_query(
+    "SELECT event_id, name FROM events WHERE organizer_id = ? ORDER BY start_time DESC",
+    [$organizer_id]
+);
+$organizer_events = $events_result->fetch_all(MYSQLI_ASSOC);
+
 $event_id = isset($_GET['event_id']) ? (int)$_GET['event_id'] : 0;
 
+if ($event_id <= 0 && count($organizer_events) > 0) {
+    $event_id = (int)$organizer_events[0]['event_id'];
+}
+
 if ($event_id <= 0) {
-    header("Location: ../eo_events.php");
+    header("Location: eo_events.php");
     exit();
 }
 
@@ -31,7 +41,7 @@ $event_result = $conn->execute_query(
 $event = $event_result->fetch_assoc();
 
 if (!$event) {
-    header("Location: ../eo_events.php");
+    header("Location: eo_events.php");
     exit();
 }
 
@@ -41,11 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'create') {
 
-        $name = trim($_POST['name'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $type = trim($_POST['type'] ?? '');
         $requirement = (int)($_POST['requirement'] ?? 0);
         $reward_points = (int)($_POST['reward_points'] ?? 0);
+
+        $name = $type;
 
         if ($name === '' || $type === '' || $requirement <= 0 || $reward_points < 0) {
             $error = "Please fill in all required fields correctly.";
@@ -112,7 +123,7 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Quest Customiser</title>
+    <title>Quest Customizer</title>
 
     <style>
 
@@ -124,39 +135,65 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
             margin: 0;
             background: #f7f5ef;
             color: #1b4332;
-            font-family: Arial, sans-serif;
+            font-family: Georgia, 'Times New Roman', serif;
         }
 
         .content {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1080px;
             margin: 0 auto;
             padding: 40px 20px 60px;
         }
 
         h1 {
-            font-family: Georgia, 'Times New Roman', serif;
+            text-align: center;
             font-size: 30px;
-            margin-bottom: 8px;
+            margin: 0 0 25px;
             color: #1b4332;
         }
 
-        h2 {
-            color: #1b4332;
+        .event-select {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            font-family: Arial, sans-serif;
         }
 
-        .event-name {
-            color: #666;
-            margin-bottom: 25px;
+        .event-select label {
+            font-weight: 600;
+            font-size: 14px;
         }
 
-        .form-card,
-        .quest-card {
+        .event-select select {
+            padding: 8px 12px;
+            border: 1px solid #d8cfc0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .panel {
             background: #fff;
             border: 1px solid #e0dacd;
             border-radius: 8px;
             padding: 25px;
-            margin-bottom: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .panel h2 {
+            margin: 0 0 20px;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 19px;
+            color: #1b4332;
         }
 
         .form-group {
@@ -180,17 +217,12 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
             border-radius: 6px;
             font-size: 14px;
             background: #fff;
+            font-family: Arial, sans-serif;
         }
 
         textarea {
-            min-height: 100px;
+            min-height: 90px;
             resize: vertical;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
         }
 
         button,
@@ -210,61 +242,59 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
             color: #fff;
         }
 
-        .btn-secondary {
-            background: #ece7dc;
-            color: #1b4332;
-        }
-
         .btn-danger {
-            background: #b42318;
-            color: #fff;
+            background: #fff;
+            color: #b42318;
+            border: 1px solid #e5aeb5;
+            padding: 6px 14px;
+            font-size: 13px;
         }
 
-        .quest-header {
+        .quest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .quest-card {
+            background: #f7f5ef;
+            border: 1px solid #ece5d5;
+            border-radius: 8px;
+            padding: 15px 18px;
+        }
+
+        .quest-card-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 15px;
+            gap: 10px;
         }
 
-        .quest-title {
-            margin: 0 0 8px;
-            font-size: 19px;
+        .quest-type {
+            margin: 0 0 6px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: .3px;
         }
 
         .quest-description {
-            color: #666;
-            margin: 0 0 15px;
-            line-height: 1.5;
+            color: #555;
+            margin: 0 0 10px;
+            font-size: 14px;
+            line-height: 1.4;
         }
 
-        .quest-info {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .info-box {
-            background: #f7f5ef;
-            border-radius: 6px;
-            padding: 12px;
-        }
-
-        .info-label {
-            font-size: 12px;
+        .quest-meta {
+            font-size: 13px;
             color: #777;
-            margin-bottom: 4px;
-        }
-
-        .info-value {
-            font-weight: 600;
         }
 
         .message {
             padding: 12px 15px;
             border-radius: 6px;
             margin-bottom: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
         }
 
         .error {
@@ -283,46 +313,17 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
             text-align: center;
             padding: 30px 15px;
             color: #777;
+            font-family: Arial, sans-serif;
         }
 
         @media (max-width: 768px) {
 
-            .content {
-                padding: 25px 15px 40px;
-            }
-
-            h1 {
-                font-size: 25px;
-            }
-
-            .form-card,
-            .quest-card {
-                padding: 18px;
-            }
-
-            .quest-header {
-                flex-direction: column;
-            }
-
-            .quest-header form {
-                width: 100%;
-            }
-
-            .quest-header form button {
-                width: 100%;
-            }
-
-            .quest-info {
+            .layout {
                 grid-template-columns: 1fr;
             }
 
-            .actions {
-                flex-direction: column;
-            }
-
-            .actions button,
-            .actions .btn {
-                width: 100%;
+            .panel {
+                padding: 18px;
             }
 
             input,
@@ -332,23 +333,9 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
             }
         }
 
-        @media (max-width: 480px) {
-
-            .content {
-                padding: 18px 12px 30px;
-            }
-
-            h1 {
-                font-size: 22px;
-            }
-
-            .form-card,
-            .quest-card {
-                padding: 15px;
-            }
-        }
-
     </style>
+
+    <?php include("global.php"); ?>
 
 </head>
 
@@ -358,11 +345,32 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
 
 <main class="content">
 
-    <h1>Quest Customiser</h1>
+    <h1>Quest Customizer</h1>
 
-    <div class="event-name">
-        <?php echo htmlspecialchars($event['name']); ?>
-    </div>
+    <?php if (count($organizer_events) > 0): ?>
+
+        <form class="event-select" method="GET">
+
+            <label for="event_id">Select Event:</label>
+
+            <select id="event_id" name="event_id" onchange="this.form.submit()">
+
+                <?php foreach ($organizer_events as $ev): ?>
+
+                    <option
+                        value="<?php echo (int)$ev['event_id']; ?>"
+                        <?php echo ((int)$ev['event_id'] === $event_id) ? 'selected' : ''; ?>
+                    >
+                        <?php echo htmlspecialchars($ev['name']); ?>
+                    </option>
+
+                <?php endforeach; ?>
+
+            </select>
+
+        </form>
+
+    <?php endif; ?>
 
     <?php if ($error !== ''): ?>
 
@@ -380,202 +388,153 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
 
     <?php endif; ?>
 
-    <div class="form-card">
+    <div class="layout">
 
-        <h2>Create Quest</h2>
+        <div class="panel">
 
-        <form method="POST">
+            <h2>Create New Quest</h2>
 
-            <input type="hidden" name="action" value="create">
+            <form method="POST">
 
-            <div class="form-group">
+                <input type="hidden" name="action" value="create">
 
-                <label for="name">Quest Name</label>
+                <div class="form-group">
 
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>"
-                >
+                    <label for="type">Quest Type</label>
 
-            </div>
+                    <select id="type" name="type" required>
 
-            <div class="form-group">
+                        <option value="">Select quest type</option>
 
-                <label for="description">Description</label>
+                        <option value="LOG_TOTAL">LOG_TOTAL</option>
 
-                <textarea
-                    id="description"
-                    name="description"
-                ><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
+                        <option value="LOG_STREAK">LOG_STREAK</option>
 
-            </div>
+                        <option value="HEIGHT">HEIGHT</option>
 
-            <div class="form-group">
+                    </select>
 
-                <label for="type">Quest Type</label>
+                </div>
 
-                <select id="type" name="type" required>
+                <div class="form-group">
 
-                    <option value="">Select quest type</option>
+                    <label for="description">Quest Description</label>
 
-                    <option value="LOG_TOTAL">Total Logs</option>
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Describe this quest"
+                    ><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
 
-                    <option value="LOG_STREAK">Logging Streak</option>
+                </div>
 
-                    <option value="HEIGHT">Plant Height</option>
+                <div class="form-group">
 
-                </select>
+                    <label for="requirement">Requirement (number needed)</label>
 
-            </div>
+                    <input
+                        type="number"
+                        id="requirement"
+                        name="requirement"
+                        min="1"
+                        required
+                        placeholder="e.g. 3"
+                        value="<?php echo htmlspecialchars($_POST['requirement'] ?? ''); ?>"
+                    >
 
-            <div class="form-group">
+                </div>
 
-                <label for="requirement">Requirement</label>
+                <div class="form-group">
 
-                <input
-                    type="number"
-                    id="requirement"
-                    name="requirement"
-                    min="1"
-                    required
-                    value="<?php echo htmlspecialchars($_POST['requirement'] ?? ''); ?>"
-                >
+                    <label for="reward_points">Reward Points</label>
 
-            </div>
+                    <input
+                        type="number"
+                        id="reward_points"
+                        name="reward_points"
+                        min="0"
+                        required
+                        placeholder="e.g. 100"
+                        value="<?php echo htmlspecialchars($_POST['reward_points'] ?? ''); ?>"
+                    >
 
-            <div class="form-group">
-
-                <label for="reward_points">Reward Points</label>
-
-                <input
-                    type="number"
-                    id="reward_points"
-                    name="reward_points"
-                    min="0"
-                    required
-                    value="<?php echo htmlspecialchars($_POST['reward_points'] ?? ''); ?>"
-                >
-
-            </div>
-
-            <div class="actions">
+                </div>
 
                 <button type="submit" class="btn btn-primary">
                     Create Quest
                 </button>
 
-                <a href="../eo_events.php" class="btn btn-secondary">
-                    Back
-                </a>
+            </form>
 
-            </div>
-
-        </form>
-
-    </div>
-
-    <h2>Existing Quests</h2>
-
-    <?php if (count($quests) === 0): ?>
-
-        <div class="quest-card empty">
-            No quests have been created for this event yet.
         </div>
 
-    <?php else: ?>
+        <div class="panel">
 
-        <?php foreach ($quests as $quest): ?>
+            <h2>Quests for this Event</h2>
 
-            <div class="quest-card">
+            <?php if (count($quests) === 0): ?>
 
-                <div class="quest-header">
+                <div class="empty">
+                    No quests have been created for this event yet.
+                </div>
 
-                    <div>
+            <?php else: ?>
 
-                        <h3 class="quest-title">
-                            <?php echo htmlspecialchars($quest['name']); ?>
-                        </h3>
+                <div class="quest-list">
 
-                        <p class="quest-description">
-                            <?php echo htmlspecialchars($quest['description']); ?>
-                        </p>
+                    <?php foreach ($quests as $quest): ?>
 
-                    </div>
+                        <div class="quest-card">
 
-                    <form method="POST">
+                            <div class="quest-card-header">
 
-                        <input
-                            type="hidden"
-                            name="action"
-                            value="delete"
-                        >
+                                <h3 class="quest-type">
+                                    <?php echo htmlspecialchars($quest['type']); ?>
+                                </h3>
 
-                        <input
-                            type="hidden"
-                            name="quest_id"
-                            value="<?php echo (int)$quest['quest_id']; ?>"
-                        >
+                                <form method="POST">
 
-                        <button
-                            type="submit"
-                            class="btn btn-danger"
-                            onclick="return confirm('Delete this quest?');"
-                        >
-                            Delete
-                        </button>
+                                    <input type="hidden" name="action" value="delete">
 
-                    </form>
+                                    <input
+                                        type="hidden"
+                                        name="quest_id"
+                                        value="<?php echo (int)$quest['quest_id']; ?>"
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-danger"
+                                        onclick="return confirm('Delete this quest?');"
+                                    >
+                                        Delete
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                            <p class="quest-description">
+                                <?php echo htmlspecialchars($quest['description']); ?>
+                            </p>
+
+                            <div class="quest-meta">
+                                Requirement: <?php echo (int)$quest['requirement']; ?>
+                                &nbsp;|&nbsp;
+                                Reward: <?php echo (int)$quest['reward_points']; ?> pts
+                            </div>
+
+                        </div>
+
+                    <?php endforeach; ?>
 
                 </div>
 
-                <div class="quest-info">
+            <?php endif; ?>
 
-                    <div class="info-box">
+        </div>
 
-                        <div class="info-label">
-                            Type
-                        </div>
-
-                        <div class="info-value">
-                            <?php echo htmlspecialchars($quest['type']); ?>
-                        </div>
-
-                    </div>
-
-                    <div class="info-box">
-
-                        <div class="info-label">
-                            Requirement
-                        </div>
-
-                        <div class="info-value">
-                            <?php echo (int)$quest['requirement']; ?>
-                        </div>
-
-                    </div>
-
-                    <div class="info-box">
-
-                        <div class="info-label">
-                            Reward Points
-                        </div>
-
-                        <div class="info-value">
-                            <?php echo (int)$quest['reward_points']; ?> points
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        <?php endforeach; ?>
-
-    <?php endif; ?>
+    </div>
 
 </main>
 

@@ -1,4 +1,6 @@
 <?php
+ob_start();
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -106,6 +108,10 @@ if ($event_id > 0 && count($participants) > 0) {
     <title>Participant List</title>
 
     <style>
+
+        * {
+            box-sizing: border-box;
+        }
 
         .content {
             max-width: 1000px;
@@ -238,7 +244,74 @@ if ($event_id > 0 && count($participants) > 0) {
             text-decoration: underline;
         }
 
-        
+        .table-container {
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+
+            html,
+            body {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+
+            .content {
+                padding: 25px 15px 40px;
+            }
+
+            .content h1 {
+                font-size: 25px;
+            }
+
+            .section-box {
+                padding: 15px;
+            }
+
+            .event-select-form,
+            .search-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .event-select-form select,
+            .search-form input[type="text"] {
+                width: 100%;
+                min-width: 0;
+                font-size: 16px;
+            }
+
+            .search-form .btn-primary {
+                width: 100%;
+            }
+
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .data-table {
+                min-width: 620px;
+            }
+
+        }
+
+        @media (max-width: 480px) {
+
+            .content {
+                padding: 18px 12px 30px;
+            }
+
+            .content h1 {
+                font-size: 22px;
+            }
+
+            .event-info-box {
+                font-size: 13px;
+            }
+
+        }
 
     </style>
 
@@ -360,6 +433,8 @@ if ($event_id > 0 && count($participants) > 0) {
 
                 <?php } else { ?>
 
+                    <div class="table-container">
+
                     <table class="data-table">
 
                         <tr>
@@ -442,6 +517,8 @@ if ($event_id > 0 && count($participants) > 0) {
 
                     </table>
 
+                    </div>
+
                 <?php } ?>
 
             </div>
@@ -455,3 +532,5 @@ if ($event_id > 0 && count($participants) > 0) {
 </body>
 
 </html>
+
+<?php ob_end_flush(); ?>

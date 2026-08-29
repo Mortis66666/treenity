@@ -224,7 +224,16 @@ include 'header.php';
         .stats-grid {
             grid-template-columns: 1fr;
         }
-        
+
+        .quick-links {
+            flex-direction: column;
+        }
+
+        .quick-links a {
+            width: 100%;
+            text-align: center;
+        }
+
     }
 
     @media (max-width: 768px) {
@@ -523,7 +532,8 @@ include 'header.php';
         <?php if (empty($recent_events)): ?>
             <p style="color:#6b6355;font-size:13px;">No events yet. <a href="eo_create_event.php" style="color:#1b4332;font-weight:600;">Create one now.</a></p>
         <?php else: ?>
-            <table>
+            <div class="table-container">
+                <table>
                 <thead>
                     <tr>
                         <th>Event Name</th>
@@ -554,7 +564,8 @@ include 'header.php';
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
-            </table>
+                </table>
+            </div>
         <?php endif; ?>
     </div>
 </div>

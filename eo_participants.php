@@ -1,4 +1,5 @@
 <?php
+ob_start();
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -790,3 +791,5 @@ foreach ($quest_progress as $qp) {
 </body>
 
 </html>
+
+<?php ob_end_flush(); ?>
