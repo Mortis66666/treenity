@@ -238,6 +238,8 @@ if ($event_id > 0 && count($participants) > 0) {
             text-decoration: underline;
         }
 
+        
+
     </style>
 
     <?php include("global.php"); ?>

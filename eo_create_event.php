@@ -268,6 +268,267 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 20px;
         }
 
+        @media (max-width: 768px) {
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .content,
+    .container,
+    .main-content {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 20px 15px;
+    }
+
+    h1 {
+        font-size: 25px;
+        line-height: 1.3;
+        margin-bottom: 18px;
+    }
+
+    h2 {
+        font-size: 21px;
+    }
+
+    h3 {
+        font-size: 18px;
+    }
+
+    .card,
+    .form-card,
+    .event-card,
+    .panel,
+    .section-card {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 15px;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        max-width: 100%;
+        font-size: 16px;
+    }
+
+    textarea {
+        min-height: 110px;
+    }
+
+    button,
+    .btn,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .btn-success {
+        min-height: 44px;
+        max-width: 100%;
+    }
+
+    .actions,
+    .button-group,
+    .form-actions {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .actions button,
+    .actions a,
+    .button-group button,
+    .button-group a,
+    .form-actions button,
+    .form-actions a {
+        width: 100%;
+        text-align: center;
+    }
+
+    .grid,
+    .cards,
+    .event-grid,
+    .stats-grid,
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+    }
+
+    .stats,
+    .statistics {
+        display: grid;
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    table {
+        width: 100%;
+        min-width: 650px;
+    }
+
+    .table-container,
+    .table-responsive,
+    .participants-table,
+    .responsive-table {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .event-card img,
+    .card img,
+    .banner,
+    .event-image {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        object-fit: cover;
+    }
+
+    .modal,
+    .modal-content {
+        width: calc(100% - 30px);
+        max-width: 100%;
+        margin: 15px auto;
+    }
+
+    .modal-body {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .search,
+    .search-box,
+    .filter,
+    .filter-box {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .search input,
+    .search-box input,
+    .filter select {
+        width: 100%;
+    }
+
+    .profile,
+    .participant-details,
+    .event-details,
+    .quest-details {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .row,
+    .form-row,
+    .detail-row {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+
+    .col,
+    .form-col,
+    .detail-col {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .quest-card,
+    .participant-card {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .quest-actions,
+    .participant-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .quest-actions button,
+    .quest-actions a,
+    .participant-actions button,
+    .participant-actions a {
+        width: 100%;
+    }
+
+    .alert,
+    .error-box,
+    .success-box {
+        width: 100%;
+        max-width: 100%;
+        overflow-wrap: break-word;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .content,
+    .container,
+    .main-content {
+        padding: 15px 12px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    h2 {
+        font-size: 19px;
+    }
+
+    h3 {
+        font-size: 17px;
+    }
+
+    .card,
+    .form-card,
+    .event-card,
+    .panel,
+    .section-card {
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    input,
+    select,
+    textarea {
+        padding: 11px;
+    }
+
+    button,
+    .btn,
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    th,
+    td {
+        padding: 8px;
+        white-space: nowrap;
+    }
+}
+
     </style>
 
     <?php include("global.php"); ?>
