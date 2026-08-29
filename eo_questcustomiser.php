@@ -13,14 +13,13 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
 }
 
 $organizer_id = $_SESSION['user_id'];
-
 $error = '';
 $success = '';
 
 $event_id = isset($_GET['event_id']) ? (int)$_GET['event_id'] : 0;
 
 if ($event_id <= 0) {
-    header("Location: eo_events.php");
+    header("Location: ../eo_events.php");
     exit();
 }
 
@@ -32,7 +31,7 @@ $event_result = $conn->execute_query(
 $event = $event_result->fetch_assoc();
 
 if (!$event) {
-    header("Location: eo_events.php");
+    header("Location: ../eo_events.php");
     exit();
 }
 
@@ -96,9 +95,9 @@ if (isset($_GET['success'])) {
 
 $quests_result = $conn->execute_query(
     "SELECT quest_id, name, description, type, requirement, reward_points
-     FROM quests
-     WHERE event_id = ?
-     ORDER BY quest_id DESC",
+    FROM quests
+    WHERE event_id = ?
+    ORDER BY quest_id DESC",
     [$event_id]
 );
 
@@ -107,6 +106,7 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <meta charset="UTF-8">
@@ -138,6 +138,10 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
             font-family: Georgia, 'Times New Roman', serif;
             font-size: 30px;
             margin-bottom: 8px;
+            color: #1b4332;
+        }
+
+        h2 {
             color: #1b4332;
         }
 
@@ -350,7 +354,7 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
 
 <body>
 
-<?php include("../header.php"); ?>
+<?php include("header.php"); ?>
 
 <main class="content">
 
@@ -361,15 +365,19 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
     </div>
 
     <?php if ($error !== ''): ?>
+
         <div class="message error">
             <?php echo htmlspecialchars($error); ?>
         </div>
+
     <?php endif; ?>
 
     <?php if ($success !== ''): ?>
+
         <div class="message success">
             <?php echo htmlspecialchars($success); ?>
         </div>
+
     <?php endif; ?>
 
     <div class="form-card">
@@ -381,7 +389,9 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
             <input type="hidden" name="action" value="create">
 
             <div class="form-group">
+
                 <label for="name">Quest Name</label>
+
                 <input
                     type="text"
                     id="name"
@@ -389,28 +399,42 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
                     required
                     value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>"
                 >
+
             </div>
 
             <div class="form-group">
+
                 <label for="description">Description</label>
+
                 <textarea
                     id="description"
                     name="description"
                 ><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
+
             </div>
 
             <div class="form-group">
+
                 <label for="type">Quest Type</label>
+
                 <select id="type" name="type" required>
+
                     <option value="">Select quest type</option>
+
                     <option value="LOG_TOTAL">Total Logs</option>
+
                     <option value="LOG_STREAK">Logging Streak</option>
+
                     <option value="HEIGHT">Plant Height</option>
+
                 </select>
+
             </div>
 
             <div class="form-group">
+
                 <label for="requirement">Requirement</label>
+
                 <input
                     type="number"
                     id="requirement"
@@ -419,10 +443,13 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
                     required
                     value="<?php echo htmlspecialchars($_POST['requirement'] ?? ''); ?>"
                 >
+
             </div>
 
             <div class="form-group">
+
                 <label for="reward_points">Reward Points</label>
+
                 <input
                     type="number"
                     id="reward_points"
@@ -431,6 +458,7 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
                     required
                     value="<?php echo htmlspecialchars($_POST['reward_points'] ?? ''); ?>"
                 >
+
             </div>
 
             <div class="actions">
@@ -439,7 +467,7 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
                     Create Quest
                 </button>
 
-                <a href="eo_events.php" class="btn btn-secondary">
+                <a href="../eo_events.php" class="btn btn-secondary">
                     Back
                 </a>
 
@@ -479,7 +507,11 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
 
                     <form method="POST">
 
-                        <input type="hidden" name="action" value="delete">
+                        <input
+                            type="hidden"
+                            name="action"
+                            value="delete"
+                        >
 
                         <input
                             type="hidden"
@@ -502,24 +534,39 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
                 <div class="quest-info">
 
                     <div class="info-box">
-                        <div class="info-label">Type</div>
+
+                        <div class="info-label">
+                            Type
+                        </div>
+
                         <div class="info-value">
                             <?php echo htmlspecialchars($quest['type']); ?>
                         </div>
+
                     </div>
 
                     <div class="info-box">
-                        <div class="info-label">Requirement</div>
+
+                        <div class="info-label">
+                            Requirement
+                        </div>
+
                         <div class="info-value">
                             <?php echo (int)$quest['requirement']; ?>
                         </div>
+
                     </div>
 
                     <div class="info-box">
-                        <div class="info-label">Reward Points</div>
+
+                        <div class="info-label">
+                            Reward Points
+                        </div>
+
                         <div class="info-value">
                             <?php echo (int)$quest['reward_points']; ?> points
                         </div>
+
                     </div>
 
                 </div>
@@ -532,7 +579,7 @@ $quests = $quests_result->fetch_all(MYSQLI_ASSOC);
 
 </main>
 
-<?php include("../footer.php"); ?>
+<?php include("footer.php"); ?>
 
 </body>
 </html>

@@ -7,7 +7,11 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once("database.php");
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANIZER') {
+if (
+    !isset($_SESSION['user_id']) ||
+    !isset($_SESSION['role']) ||
+    $_SESSION['role'] != 'ORGANIZER'
+) {
     header("Location: login.php");
     exit();
 }
@@ -15,9 +19,11 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
 $organizer_id = $_SESSION['user_id'];
 
 if (isset($_POST['delete_event_id'])) {
+    $delete_event_id = (int)$_POST['delete_event_id'];
+
     $conn->execute_query(
         "DELETE FROM events WHERE event_id = ? AND organizer_id = ?",
-        [$_POST['delete_event_id'], $organizer_id]
+        [$delete_event_id, $organizer_id]
     );
 
     header("Location: eo_events.php?deleted=1");
@@ -37,7 +43,7 @@ $sql = "SELECT
         LEFT JOIN participants p ON e.event_id = p.event_id
         WHERE e.organizer_id = ?";
 
-$params = array($organizer_id);
+$params = [$organizer_id];
 
 if ($search != '') {
     $sql .= " AND e.name LIKE ?";
@@ -45,12 +51,12 @@ if ($search != '') {
 }
 
 $sql .= " GROUP BY e.event_id, e.name, e.start_time, e.end_time
-        ORDER BY e.start_time DESC";
+          ORDER BY e.start_time DESC";
 
 $result = $conn->execute_query($sql, $params);
 $all_events = $result->fetch_all(MYSQLI_ASSOC);
 
-$events = array();
+$events = [];
 $draft_count = 0;
 $now = date("Y-m-d H:i:s");
 
@@ -87,6 +93,19 @@ foreach ($all_events as $ev) {
     <title>Events Organised</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
         .content {
             max-width: 1100px;
             margin: 0 auto;
@@ -133,6 +152,23 @@ foreach ($all_events as $ev) {
             background: #2d6a4f;
         }
 
+        .btn-secondary {
+            background: #f4f1eb;
+            color: #1b4332;
+            border: 1px solid #d8cfc0;
+            padding: 9px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e2d7;
+        }
+
         .success-box {
             background: #d8f0dc;
             border: 1px solid #9bd4a8;
@@ -147,6 +183,7 @@ foreach ($all_events as $ev) {
             display: flex;
             border-bottom: 2px solid #e0dacd;
             margin-bottom: 18px;
+            overflow-x: auto;
         }
 
         .tab {
@@ -156,6 +193,7 @@ foreach ($all_events as $ev) {
             text-decoration: none;
             border-bottom: 3px solid transparent;
             margin-bottom: -2px;
+            white-space: nowrap;
         }
 
         .tab.active {
@@ -172,6 +210,7 @@ foreach ($all_events as $ev) {
             display: flex;
             gap: 8px;
             margin-bottom: 24px;
+            flex-wrap: wrap;
         }
 
         .search-form input[type="text"] {
@@ -268,298 +307,104 @@ foreach ($all_events as $ev) {
             text-decoration: underline;
         }
 
-        @media (max-width: 600px) {
+        .empty-state {
+            background: #fff;
+            border: 1px solid #e0dacd;
+            border-radius: 8px;
+            padding: 35px 20px;
+            text-align: center;
+            color: #6b6355;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                padding: 20px 15px;
+            }
+
+            .content h1 {
+                font-size: 25px;
+                line-height: 1.3;
+            }
+
+            .page-header {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .page-header .btn-primary {
+                width: 100%;
+                text-align: center;
+            }
+
             .event-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr !important;
+                gap: 15px;
+            }
+
+            .event-card {
+                width: 100%;
+            }
+
+            .search-form {
+                flex-direction: column;
+                width: 100%;
             }
 
             .search-form input[type="text"] {
                 max-width: none;
+                width: 100%;
+            }
+
+            .search-form button {
+                width: 100%;
+            }
+
+            .card-actions {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+
+            .card-actions a,
+            .card-actions button {
+                width: 100%;
+                text-align: center;
+                padding: 10px;
+            }
+
+            .card-actions form {
+                width: 100%;
+            }
+
+            .tabs {
+                width: 100%;
+            }
+
+            .tab {
+                padding: 8px 12px;
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 480px) {
+            .content {
+                padding: 15px 12px;
+            }
 
-    * {
-        box-sizing: border-box;
-    }
+            .content h1 {
+                font-size: 22px;
+            }
 
-    html,
-    body {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-    .content,
-    .container,
-    .main-content {
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        padding: 20px 15px;
-    }
-
-    h1 {
-        font-size: 25px;
-        line-height: 1.3;
-        margin-bottom: 18px;
-    }
-
-    h2 {
-        font-size: 21px;
-    }
-
-    h3 {
-        font-size: 18px;
-    }
-
-    .card,
-    .form-card,
-    .event-card,
-    .panel,
-    .section-card {
-        width: 100%;
-        max-width: 100%;
-        margin-bottom: 15px;
-    }
-
-    input,
-    select,
-    textarea {
-        width: 100%;
-        max-width: 100%;
-        font-size: 16px;
-    }
-
-    textarea {
-        min-height: 110px;
-    }
-
-    button,
-    .btn,
-    .btn-primary,
-    .btn-secondary,
-    .btn-danger,
-    .btn-success {
-        min-height: 44px;
-        max-width: 100%;
-    }
-
-    .actions,
-    .button-group,
-    .form-actions {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        gap: 10px;
-    }
-
-    .actions button,
-    .actions a,
-    .button-group button,
-    .button-group a,
-    .form-actions button,
-    .form-actions a {
-        width: 100%;
-        text-align: center;
-    }
-
-    .grid,
-    .cards,
-    .event-grid,
-    .stats-grid,
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: 1fr !important;
-        gap: 15px;
-    }
-
-    .stats,
-    .statistics {
-        display: grid;
-        grid-template-columns: 1fr !important;
-        gap: 12px;
-    }
-
-    table {
-        width: 100%;
-        min-width: 650px;
-    }
-
-    .table-container,
-    .table-responsive,
-    .participants-table,
-    .responsive-table {
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .event-card img,
-    .card img,
-    .banner,
-    .event-image {
-        width: 100%;
-        height: auto;
-        max-width: 100%;
-        object-fit: cover;
-    }
-
-    .modal,
-    .modal-content {
-        width: calc(100% - 30px);
-        max-width: 100%;
-        margin: 15px auto;
-    }
-
-    .modal-body {
-        max-height: 80vh;
-        overflow-y: auto;
-    }
-
-    .search,
-    .search-box,
-    .filter,
-    .filter-box {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .search input,
-    .search-box input,
-    .filter select {
-        width: 100%;
-    }
-
-    .profile,
-    .participant-details,
-    .event-details,
-    .quest-details {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .row,
-    .form-row,
-    .detail-row {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        gap: 12px;
-    }
-
-    .col,
-    .form-col,
-    .detail-col {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .quest-card,
-    .participant-card {
-        width: 100%;
-        padding: 15px;
-    }
-
-    .quest-actions,
-    .participant-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        width: 100%;
-    }
-
-    .quest-actions button,
-    .quest-actions a,
-    .participant-actions button,
-    .participant-actions a {
-        width: 100%;
-    }
-
-    .alert,
-    .error-box,
-    .success-box {
-        width: 100%;
-        max-width: 100%;
-        overflow-wrap: break-word;
-    }
-}
-
-@media (max-width: 480px) {
-
-    .content,
-    .container,
-    .main-content {
-        padding: 15px 12px;
-    }
-
-    h1 {
-        font-size: 22px;
-    }
-
-    h2 {
-        font-size: 19px;
-    }
-
-    h3 {
-        font-size: 17px;
-    }
-
-    .card,
-    .form-card,
-    .event-card,
-    .panel,
-    .section-card {
-        padding: 15px;
-        border-radius: 8px;
-    }
-
-    input,
-    select,
-    textarea {
-        padding: 11px;
-    }
-
-    button,
-    .btn,
-    .btn-primary,
-    .btn-secondary {
-        width: 100%;
-    }
-
-    table {
-        font-size: 13px;
-    }
-
-    th,
-    td {
-        padding: 8px;
-        white-space: nowrap;
-    }
-}
-@media (max-width: 768px) {
-    .event-list,
-    .events-list {
-        display: grid;
-        grid-template-columns: 1fr !important;
-        gap: 15px;
-    }
-
-    .event-card {
-        width: 100%;
-    }
-
-    .event-card .actions {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .event-card .actions a,
-    .event-card .actions button {
-        width: 100%;
-    }
-}
+            .event-card {
+                padding: 15px;
+            }
+        }
     </style>
 
     <?php include("global.php"); ?>
@@ -568,13 +413,233 @@ foreach ($all_events as $ev) {
 
 <body>
 
-    <?php include("header.php"); ?>
+<?php include("header.php"); ?>
 
-    <main class="content">
+<main class="content">
 
-        <div class="page-header">
+    <div class="page-header">
 
-            <h1>Events Organised</h1>
+        <h1>Events Organised</h1>
+
+        <a href="eo_create_event.php" class="btn-primary">
+            Create Event
+        </a>
+
+    </div>
+
+    <?php if (isset($_GET['created'])) { ?>
+        <div class="success-box">
+            Event created successfully!
+        </div>
+    <?php } ?>
+
+    <?php if (isset($_GET['draft_saved'])) { ?>
+        <div class="success-box">
+            Draft saved. You can come back and finish it any time.
+        </div>
+    <?php } ?>
+
+    <?php if (isset($_GET['deleted'])) { ?>
+        <div class="success-box">
+            Event deleted.
+        </div>
+    <?php } ?>
+
+    <div class="tabs">
+
+        <a
+            href="eo_events.php?filter=all"
+            class="tab <?php if ($filter == 'all') echo 'active'; ?>"
+        >
+            All
+        </a>
+
+        <a
+            href="eo_events.php?filter=active"
+            class="tab <?php if (strtolower($filter) == 'active') echo 'active'; ?>"
+        >
+            Active
+        </a>
+
+        <a
+            href="eo_events.php?filter=upcoming"
+            class="tab <?php if (strtolower($filter) == 'upcoming') echo 'active'; ?>"
+        >
+            Upcoming
+        </a>
+
+        <a
+            href="eo_events.php?filter=ended"
+            class="tab <?php if (strtolower($filter) == 'ended') echo 'active'; ?>"
+        >
+            Ended
+        </a>
+
+        <a
+            href="eo_events.php?filter=draft"
+            class="tab <?php if (strtolower($filter) == 'draft') echo 'active'; ?>"
+        >
+            Drafts
+            <?php if ($draft_count > 0) { ?>
+                (<?php echo $draft_count; ?>)
+            <?php } ?>
+        </a>
+
+    </div>
+
+    <form method="GET" class="search-form">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search events..."
+            value="<?php echo htmlspecialchars($search); ?>"
+        >
+
+        <input
+            type="hidden"
+            name="filter"
+            value="<?php echo htmlspecialchars($filter); ?>"
+        >
+
+        <button type="submit" class="btn-primary">
+            Search
+        </button>
+
+        <?php if ($search != '') { ?>
+
+            <a
+                href="eo_events.php?filter=<?php echo urlencode($filter); ?>"
+                class="btn-secondary"
+            >
+                Clear
+            </a>
+
+        <?php } ?>
+
+    </form>
+
+    <?php if (count($events) > 0) { ?>
+
+        <div class="event-grid">
+
+            <?php foreach ($events as $ev) { ?>
+
+                <div class="event-card">
+
+                    <span class="status-tag status-<?php echo strtolower(htmlspecialchars($ev['status'])); ?>">
+                        <?php echo htmlspecialchars($ev['status']); ?>
+                    </span>
+
+                    <h3>
+                        <?php echo htmlspecialchars($ev['name']); ?>
+                    </h3>
+
+                    <?php if (!empty($ev['start_time'])) { ?>
+
+                        <p>
+                            <strong>Start:</strong>
+                            <?php
+                            echo htmlspecialchars(
+                                date(
+                                    "d M Y, h:i A",
+                                    strtotime($ev['start_time'])
+                                )
+                            );
+                            ?>
+                        </p>
+
+                    <?php } else { ?>
+
+                        <p>
+                            <strong>Start:</strong>
+                            Not set
+                        </p>
+
+                    <?php } ?>
+
+                    <?php if (!empty($ev['end_time'])) { ?>
+
+                        <p>
+                            <strong>End:</strong>
+                            <?php
+                            echo htmlspecialchars(
+                                date(
+                                    "d M Y, h:i A",
+                                    strtotime($ev['end_time'])
+                                )
+                            );
+                            ?>
+                        </p>
+
+                    <?php } else { ?>
+
+                        <p>
+                            <strong>End:</strong>
+                            Not set
+                        </p>
+
+                    <?php } ?>
+
+                    <p>
+                        <strong>Participants:</strong>
+                        <?php echo (int)$ev['participant_count']; ?>
+                    </p>
+
+                    <div class="card-actions">
+
+                        <a href="eo_event_details.php?event_id=<?php echo (int)$ev['event_id']; ?>">
+                            View Details
+                        </a>
+
+                        <a href="eo_questcustomiser.php?event_id=<?php echo (int)$ev['event_id']; ?>">
+                            Quest Customiser
+                        </a>
+
+                        <form
+                            method="POST"
+                            onsubmit="return confirm('Are you sure you want to delete this event?');"
+                        >
+
+                            <input
+                                type="hidden"
+                                name="delete_event_id"
+                                value="<?php echo (int)$ev['event_id']; ?>"
+                            >
+
+                            <button type="submit">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            <?php } ?>
+
+        </div>
+
+    <?php } else { ?>
+
+        <div class="empty-state">
+
+            <h3>No events found</h3>
+
+            <?php if ($search != '') { ?>
+
+                <p>
+                    No events matched your search.
+                </p>
+
+            <?php } else { ?>
+
+                <p>
+                    You don't have any events in this category yet.
+                </p>
+
+            <?php } ?>
 
             <a href="eo_create_event.php" class="btn-primary">
                 Create Event
@@ -582,216 +647,9 @@ foreach ($all_events as $ev) {
 
         </div>
 
-        <?php if (isset($_GET['created'])) { ?>
-            <div class="success-box">
-                Event created successfully!
-            </div>
-        <?php } ?>
+    <?php } ?>
 
-        <?php if (isset($_GET['draft_saved'])) { ?>
-            <div class="success-box">
-                Draft saved. You can come back and finish it any time.
-            </div>
-        <?php } ?>
-
-        <?php if (isset($_GET['deleted'])) { ?>
-            <div class="success-box">
-                Event deleted.
-            </div>
-        <?php } ?>
-
-        <div class="tabs">
-
-            <a href="?filter=all"
-            class="tab <?php if ($filter == 'all') echo 'active'; ?>">
-                All
-            </a>
-
-            <a href="?filter=active"
-            class="tab <?php if ($filter == 'active') echo 'active'; ?>">
-                Active
-            </a>
-
-            <a href="?filter=upcoming"
-            class="tab <?php if ($filter == 'upcoming') echo 'active'; ?>">
-                Upcoming
-            </a>
-
-            <a href="?filter=ended"
-            class="tab <?php if ($filter == 'ended') echo 'active'; ?>">
-                Ended
-            </a>
-
-            <a href="?filter=draft"
-            class="tab <?php if ($filter == 'draft') echo 'active'; ?>">
-                Drafts
-
-                <?php if ($draft_count > 0) { ?>
-                    (<?php echo $draft_count; ?>)
-                <?php } ?>
-
-            </a>
-
-        </div>
-
-        <form method="GET"
-            action="eo_events.php"
-            class="search-form">
-
-            <input type="hidden"
-                name="filter"
-                value="<?php echo htmlspecialchars($filter); ?>">
-
-            <input type="text"
-                name="search"
-                placeholder="Search events..."
-                value="<?php echo htmlspecialchars($search); ?>">
-
-            <button type="submit"
-                    class="btn-primary">
-                Search
-            </button>
-
-        </form>
-
-        <?php if (count($events) == 0) { ?>
-
-            <p>No events found.</p>
-
-        <?php } else { ?>
-
-            <div class="event-grid">
-
-                <?php foreach ($events as $ev) { ?>
-
-                    <div class="event-card">
-
-                        <h3>
-                            <?php echo htmlspecialchars($ev['name']); ?>
-                        </h3>
-
-                        <span class="status-tag status-<?php echo strtolower($ev['status']); ?>">
-                            <?php echo $ev['status']; ?>
-                        </span>
-
-                        <?php if ($ev['status'] == 'Draft') { ?>
-
-                            <p>
-                                Not published yet.
-                                Finish the details to make it live.
-                            </p>
-
-                            <?php if ($ev['start_time'] && $ev['end_time']) { ?>
-
-                                <p>
-                                    <?php
-                                    echo date(
-                                        "d M Y, g:ia",
-                                        strtotime($ev['start_time'])
-                                    );
-                                    ?>
-
-                                    to
-
-                                    <?php
-                                    echo date(
-                                        "d M Y, g:ia",
-                                        strtotime($ev['end_time'])
-                                    );
-                                    ?>
-                                </p>
-
-                            <?php } ?>
-
-                            <div class="card-actions">
-
-                                <a href="eo_create_event.php?event_id=<?php echo $ev['event_id']; ?>">
-                                    Continue Editing
-                                </a>
-
-                                <form method="POST"
-                                    action="eo_events.php"
-                                    onsubmit="return confirm('Delete this draft?');">
-
-                                    <input type="hidden"
-                                        name="delete_event_id"
-                                        value="<?php echo $ev['event_id']; ?>">
-
-                                    <button type="submit">
-                                        Delete
-                                    </button>
-
-                                </form>
-
-                            </div>
-
-                        <?php } else { ?>
-
-                            <p>
-                                <?php
-                                echo date(
-                                    "d M Y, g:ia",
-                                    strtotime($ev['start_time'])
-                                );
-                                ?>
-
-                                to
-
-                                <?php
-                                echo date(
-                                    "d M Y, g:ia",
-                                    strtotime($ev['end_time'])
-                                );
-                                ?>
-                            </p>
-
-                            <p>
-                                <?php echo $ev['participant_count']; ?>
-                                participants
-                            </p>
-
-                            <div class="card-actions">
-
-                                <a href="eo_participants.php?event_id=<?php echo $ev['event_id']; ?>">
-                                    Participants
-                                </a>
-
-                                <a href="eo_questcustomiser.php?event_id=<?php echo $ev['event_id']; ?>">
-                                    Quests
-                                </a>
-
-                                <form method="POST"
-                                    action="eo_events.php"
-                                    onsubmit="return confirm('Delete this event?');">
-
-                                    <input type="hidden"
-                                        name="delete_event_id"
-                                        value="<?php echo $ev['event_id']; ?>">
-
-                                    <button type="submit">
-                                        Delete
-                                    </button>
-
-                                </form>
-
-                            </div>
-
-                        <?php } ?>
-
-                    </div>
-
-                <?php } ?>
-
-            </div>
-
-        <?php } ?>
-
-    </main>
-
-    <?php include("footer.php"); ?>
+</main>
 
 </body>
-
 </html>
-
-<?php ob_end_flush(); ?>
