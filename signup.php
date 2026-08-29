@@ -30,11 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $hashed = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         $conn->execute_query(
             "INSERT INTO users (username, name, email, tp_number, password, role)
              VALUES (?, ?, ?, ?, ?, 'USER')",
-            [$username, $name, $email, $tp_number, $hashed]
+            [$username, $name, $email, $tp_number, $hashed_password]
         );
         header('Location: login.php?registered=1');
         exit;

@@ -91,7 +91,8 @@
     font-weight: 700;
 }
 
-.settings-fields input {
+.settings-fields input,
+.settings-fields textarea {
     box-sizing: border-box;
     width: 100%;
     border: 1px solid #b8c4c7;
@@ -99,6 +100,10 @@
     padding: 10px 12px;
     color: #243438;
     font: inherit;
+}
+
+.settings-fields textarea {
+    resize: vertical;
 }
 
 .settings-form button {
@@ -111,6 +116,47 @@
     cursor: pointer;
     font: inherit;
     font-weight: 700;
+}
+
+.password-section {
+    grid-column: 1 / -1;
+    margin-top: 12px;
+    padding-top: 24px;
+    border-top: 1px solid #d9dfe2;
+}
+
+.password-section h2 {
+    margin: 0 0 6px;
+    color: #243438;
+    font-size: 1.35em;
+}
+
+.password-section > p {
+    margin: 0 0 18px;
+    color: #68777a;
+    font-size: 14px;
+}
+
+.password-fields {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px 18px;
+}
+
+.password-fields label {
+    color: #243438;
+    font-weight: 700;
+}
+
+.password-fields input {
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid #b8c4c7;
+    border-radius: 2px;
+    padding: 10px 12px;
+    color: #243438;
+    font: inherit;
 }
 
 .settings-form button:hover,
@@ -129,8 +175,18 @@
     }
 
     .settings-fields,
+    .password-section,
     .profile-image-editor,
     .settings-form button {
         grid-column: 1;
+    }
+
+    .password-fields {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .password-fields input {
+        margin-bottom: 8px;
     }
 }

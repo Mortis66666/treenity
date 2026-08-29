@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $result = $conn->execute_query(
                 "INSERT INTO `users` (username, tp_number, password, role) VALUES (?, ?, ?, ?)",
-                [$old_values['username'], $old_values['tp_number'], $password, $old_values['role']]
+                [$old_values['username'], $old_values['tp_number'], password_hash($password, PASSWORD_DEFAULT), $old_values['role']]
             );
 
             if ($result) {
