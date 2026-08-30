@@ -116,7 +116,7 @@ $recent_events = $result->fetch_all(MYSQLI_ASSOC);
         margin-bottom: 16px;
     }
 
-    /* Desktop/tablet table */
+
     .table-container {
         width: 100%;
         overflow-x: auto;
@@ -152,7 +152,7 @@ $recent_events = $result->fetch_all(MYSQLI_ASSOC);
         border-bottom: none;
     }
 
-    /* Mobile card list (hidden on desktop) */
+
     .event-list-mobile {
         display: none;
     }
@@ -281,7 +281,7 @@ $recent_events = $result->fetch_all(MYSQLI_ASSOC);
         background: #ece7d9;
     }
 
-    /* Tablet */
+
     @media (max-width: 768px) {
         .eo-wrap {
             padding: 0 15px 40px;
@@ -302,7 +302,7 @@ $recent_events = $result->fetch_all(MYSQLI_ASSOC);
         }
     }
 
-    /* Mobile */
+
     @media (max-width: 600px) {
         .quick-links {
             flex-direction: column;
