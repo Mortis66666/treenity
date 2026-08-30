@@ -4,5 +4,6 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 ?>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="styles/global.css">
 <link rel="icon" href="images/assets/logo.svg" type="image/x-icon">
