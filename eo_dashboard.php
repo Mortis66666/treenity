@@ -46,11 +46,14 @@ ORDER BY e.last_updated DESC
 LIMIT 5
 ", [$organizer_id]);
 $recent_events = $result->fetch_all(MYSQLI_ASSOC);
-
-include 'header.php';
 ?>
+<!DOCTYPE html>
+<html lang="en">
 
-<link rel="stylesheet" href="styles/global.css">
+<head>
+    <meta charset="UTF-8">
+    <title>Organizer Dashboard - Treenity</title>
+    <?php include("global.php"); ?>
 <style>
     * {
         box-sizing: border-box;
@@ -92,7 +95,7 @@ include 'header.php';
     }
 
     .stats-card .lbl {
-        font-size: 12px;
+        font-size: 13px;
         color: #6b6355;
         margin-top: 4px;
     }
@@ -108,7 +111,7 @@ include 'header.php';
 
     .card-title {
         font-family: Georgia, 'Times New Roman', serif;
-        font-size: 18px;
+        font-size: 19px;
         color: #1b4332;
         margin-bottom: 16px;
     }
@@ -157,8 +160,8 @@ include 'header.php';
     .event-item {
         border: 1px solid #e0dacd;
         border-radius: 8px;
-        padding: 14px;
-        margin-bottom: 10px;
+        padding: 16px;
+        margin-bottom: 12px;
     }
 
     .event-item:last-child {
@@ -170,22 +173,22 @@ include 'header.php';
         justify-content: space-between;
         align-items: flex-start;
         gap: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
     }
 
     .event-item-name {
         font-weight: 700;
         color: #1b4332;
-        font-size: 15px;
+        font-size: 17px;
         overflow-wrap: break-word;
     }
 
     .event-item-row {
         display: flex;
         justify-content: space-between;
-        font-size: 13px;
+        font-size: 14px;
         color: #33302a;
-        padding: 4px 0;
+        padding: 6px 0;
         border-top: 1px solid #eee6d8;
     }
 
@@ -196,15 +199,16 @@ include 'header.php';
     .event-item .btn-view {
         display: block;
         text-align: center;
-        margin-top: 10px;
-        padding: 10px;
+        margin-top: 12px;
+        padding: 12px;
         border: 1px solid #e0dacd;
         border-radius: 6px;
+        font-size: 14px;
     }
 
     .badge {
-        font-size: 12px;
-        padding: 4px 10px;
+        font-size: 13px;
+        padding: 5px 12px;
         border-radius: 20px;
         font-weight: 600;
         white-space: nowrap;
@@ -247,9 +251,9 @@ include 'header.php';
         background: #1b4332;
         color: #fff;
         border: none;
-        padding: 10px 18px;
+        padding: 13px 20px;
         border-radius: 6px;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
         text-decoration: none;
@@ -264,9 +268,9 @@ include 'header.php';
         background: #f4f1ea;
         color: #1b4332;
         border: 1px solid #e0dacd;
-        padding: 10px 18px;
+        padding: 13px 20px;
         border-radius: 6px;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
         text-decoration: none;
@@ -285,7 +289,7 @@ include 'header.php';
         }
 
         .page-title {
-            font-size: 26px;
+            font-size: 27px;
         }
 
         .stats-grid {
@@ -294,7 +298,7 @@ include 'header.php';
         }
 
         .card {
-            padding: 16px;
+            padding: 18px;
         }
     }
 
@@ -327,18 +331,25 @@ include 'header.php';
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 16px;
+            padding: 16px 18px;
         }
 
         .stats-card .val {
-            font-size: 22px;
+            font-size: 26px;
         }
 
         .stats-card .lbl {
+            font-size: 13px;
             margin-top: 0;
         }
     }
 </style>
+</head>
+
+<body>
+    <?php include("header.php"); ?>
+
+    <main class="content">
 
 <div class="eo-wrap">
     <div class="page-title">Organizer Dashboard</div>
@@ -444,4 +455,9 @@ include 'header.php';
     </div>
 </div>
 
-<?php include 'footer.php'; ?>
+    </main>
+
+    <?php include("footer.php"); ?>
+</body>
+
+</html>
