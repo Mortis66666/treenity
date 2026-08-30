@@ -55,8 +55,6 @@ $name = '';
 $description = '';
 $start_time = '';
 $end_time = '';
-$banner_id = null;
-$existing_quests = [];
 
 if ($edit_mode) {
 
@@ -106,18 +104,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $end_time = $_POST['end_time'] ?? '';
     $banner_id = $edit_mode ? ($event['banner_id'] ?? null) : null;
     $action = $_POST['action'] ?? 'create';
-
-    if (!empty($_POST['remove_banner'])) {
-        $banner_id = null;
-    }
-
-    if (isset($_FILES['banner']) && $_FILES['banner']['error'] !== UPLOAD_ERR_NO_FILE) {
-        if ($_FILES['banner']['error'] === UPLOAD_ERR_OK) {
-            $banner_id = create_image('banner', $_FILES['banner']);
-        } else {
-            $error = 'The banner upload failed.';
-        }
-    }
 
     if ($action === 'draft') {
 
@@ -849,83 +835,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ><?php echo htmlspecialchars($description); ?></textarea>
 
                 </div>
-
-                <div class="form-group">
-                    <label for="banner">Banner image</label>
-
-                    <div class="banner-preview-wrap<?php echo ($edit_mode && $banner_id) ? ' show' : ''; ?>" id="bannerPreviewWrap">
-                        <img
-                            id="bannerPreviewImg"
-                            src="<?php echo ($edit_mode && $banner_id) ? htmlspecialchars(get_image_path($banner_id)) : ''; ?>"
-                            alt="Banner preview"
-                        >
-                        <button type="button" class="banner-remove-btn" id="bannerRemoveBtn">Remove Banner</button>
-                    </div>
-
-                    <input type="hidden" name="remove_banner" id="removeBannerField" value="">
-
-                    <div class="banner-upload" id="bannerUpload">
-                        <div class="banner-upload-icon">🖼️</div>
-                        <div class="banner-upload-text" id="bannerUploadText">Click or drag an image here to upload</div>
-                        <div class="banner-upload-hint">JPEG, PNG, GIF or WebP</div>
-                        <input id="banner" name="banner" type="file" accept="image/jpeg,image/png,image/gif,image/webp">
-                    </div>
-                </div>
-
-                <script>
-                (function () {
-                    var uploadBox = document.getElementById('bannerUpload');
-                    var fileInput = document.getElementById('banner');
-                    var previewWrap = document.getElementById('bannerPreviewWrap');
-                    var previewImg = document.getElementById('bannerPreviewImg');
-                    var uploadText = document.getElementById('bannerUploadText');
-                    var removeBtn = document.getElementById('bannerRemoveBtn');
-                    var removeField = document.getElementById('removeBannerField');
-
-                    function showPreview(file) {
-                        var reader = new FileReader();
-                        reader.onload = function (e) {
-                            previewImg.src = e.target.result;
-                            previewWrap.classList.add('show');
-                        };
-                        reader.readAsDataURL(file);
-                        uploadText.textContent = file.name;
-                        removeField.value = '';
-                    }
-
-                    fileInput.addEventListener('change', function () {
-                        if (fileInput.files && fileInput.files[0]) {
-                            showPreview(fileInput.files[0]);
-                        }
-                    });
-
-                    uploadBox.addEventListener('dragover', function (e) {
-                        e.preventDefault();
-                        uploadBox.classList.add('dragover');
-                    });
-
-                    uploadBox.addEventListener('dragleave', function () {
-                        uploadBox.classList.remove('dragover');
-                    });
-
-                    uploadBox.addEventListener('drop', function (e) {
-                        e.preventDefault();
-                        uploadBox.classList.remove('dragover');
-                        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                            fileInput.files = e.dataTransfer.files;
-                            showPreview(e.dataTransfer.files[0]);
-                        }
-                    });
-
-                    removeBtn.addEventListener('click', function () {
-                        fileInput.value = '';
-                        previewWrap.classList.remove('show');
-                        previewImg.src = '';
-                        uploadText.textContent = 'Click or drag an image here to upload';
-                        removeField.value = '1';
-                    });
-                })();
-                </script>
 
                 <div class="form-group">
 
