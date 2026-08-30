@@ -23,30 +23,23 @@ $total_logs = analyticsCount("SELECT COUNT(*) AS total FROM logs");
 $total_items = analyticsCount("SELECT COUNT(*) AS total FROM store");
 $low_stock_items = analyticsCount("SELECT COUNT(*) AS total FROM store WHERE stock_left <= 10");
 
-$monthly_users = analyticsRows("SELECT DATE_FORMAT(created_at, '%Y-%m') AS month_key, COUNT(*) AS total
+$monthly_users = analyticsRows(
+    "SELECT DATE_FORMAT(created_at, '%Y-%m') AS month_key, COUNT(*) AS total
     FROM users
     WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 11 MONTH)
     GROUP BY month_key
-    ORDER BY month_key ASC");
+    ORDER BY month_key ASC"
+);
 
-$log_date_column = '';
-$date_columns = analyticsRows("SELECT COLUMN_NAME AS column_name
-    FROM information_schema.COLUMNS
-    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'logs'
-    AND COLUMN_NAME IN ('created_at', 'logged_at', 'date_created')
-    ORDER BY FIELD(COLUMN_NAME, 'created_at', 'logged_at', 'date_created')");
-if ($date_columns) {
-    $log_date_column = $date_columns[0]['column_name'];
-}
 
 $monthly_logs = [];
-if ($log_date_column !== '') {
-    $monthly_logs = analyticsRows("SELECT DATE_FORMAT(`$log_date_column`, '%Y-%m') AS month_key, COUNT(*) AS total
-        FROM logs
-        WHERE `$log_date_column` >= DATE_SUB(CURDATE(), INTERVAL 11 MONTH)
-        GROUP BY month_key
-        ORDER BY month_key ASC");
-}
+$monthly_logs = analyticsRows(
+    "SELECT DATE_FORMAT(logged_at, '%Y-%m') AS month_key, COUNT(*) AS total
+    FROM logs
+    WHERE logged_at >= DATE_SUB(CURDATE(), INTERVAL 11 MONTH)
+    GROUP BY month_key
+    ORDER BY month_key ASC"
+);
 
 $months = [];
 $month_cursor = new DateTime('first day of -11 months');
@@ -75,13 +68,17 @@ foreach ($months as $month) {
     $chart_max = max($chart_max, $month['users'], $month['logs']);
 }
 
-$recent_logs = analyticsRows("SELECT l.log_id, l.height, l.comments, u.username
+$recent_logs = analyticsRows(
+    "SELECT l.log_id, l.height, l.comments, u.username
     FROM logs l
     JOIN participants p ON p.participant_id = l.participant_id
     JOIN users u ON u.user_id = p.user_id
     ORDER BY l.log_id DESC
-    LIMIT 6");
-$inventory = analyticsRows("SELECT name, stock_left, cost FROM store ORDER BY stock_left ASC, name ASC LIMIT 6");
+    LIMIT 6"
+);
+$inventory = analyticsRows(
+    "SELECT name, stock_left, cost FROM store ORDER BY stock_left ASC, name ASC LIMIT 6"
+);
 ?>
 
 <!DOCTYPE html>
@@ -156,9 +153,6 @@ $inventory = analyticsRows("SELECT name, stock_left, cost FROM store ORDER BY st
                     </div>
                 <?php endforeach; ?>
             </div>
-            <?php if ($log_date_column === ''): ?>
-                <p class="panel-note">User growth is shown above. Logs need a created or recorded date column to be plotted over time.</p>
-            <?php endif; ?>
         </section>
 
         <div class="analytics-columns">
