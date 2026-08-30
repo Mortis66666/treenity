@@ -7,6 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once("database.php");
 
+
 function save_submitted_quests($conn, $event_id)
 {
     $types = $_POST['quest_type'] ?? [];
@@ -27,8 +28,8 @@ function save_submitted_quests($conn, $event_id)
 
         $conn->execute_query(
             "INSERT INTO quests
-             (event_id, name, description, type, requirement, reward_points)
-             VALUES (?, ?, ?, ?, ?, ?)",
+            (event_id, name, description, type, requirement, reward_points)
+            VALUES (?, ?, ?, ?, ?, ?)",
             [
                 $event_id,
                 $type,
@@ -40,6 +41,7 @@ function save_submitted_quests($conn, $event_id)
         );
     }
 }
+
 
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'ORGANIZER') {
     header("Location: login.php");
@@ -55,13 +57,15 @@ $name = '';
 $description = '';
 $start_time = '';
 $end_time = '';
+$banner_id = null;
+$existing_quests = [];
 
 if ($edit_mode) {
 
     $result = $conn->execute_query(
         "SELECT event_id, banner_id, name, description, start_time, end_time
-         FROM events
-         WHERE event_id = ? AND organizer_id = ?",
+        FROM events
+        WHERE event_id = ? AND organizer_id = ?",
         [$event_id, $organizer_id]
     );
 
@@ -88,9 +92,9 @@ if ($edit_mode) {
 
     $quests_result = $conn->execute_query(
         "SELECT quest_id, name, description, type, requirement, reward_points
-         FROM quests
-         WHERE event_id = ?
-         ORDER BY quest_id DESC",
+        FROM quests
+        WHERE event_id = ?
+        ORDER BY quest_id DESC",
         [$event_id]
     );
     $existing_quests = $quests_result->fetch_all(MYSQLI_ASSOC);
@@ -105,16 +109,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $banner_id = $edit_mode ? ($event['banner_id'] ?? null) : null;
     $action = $_POST['action'] ?? 'create';
 
+    if (!empty($_POST['remove_banner'])) {
+        $banner_id = null;
+    }
+
+    if (isset($_FILES['banner']) && $_FILES['banner']['error'] !== UPLOAD_ERR_NO_FILE) {
+        if ($_FILES['banner']['error'] === UPLOAD_ERR_OK) {
+            $banner_id = create_image('banner', $_FILES['banner']);
+        } else {
+            $error = 'The banner upload failed.';
+        }
+    }
+   
+
     if ($action === 'draft') {
 
         if ($error ?? null) {
-            // keep the same validation flow, but do not continue saving invalid uploads
+
         } elseif ($edit_mode) {
 
             $conn->execute_query(
                 "UPDATE events
-                 SET banner_id = ?, name = ?, description = ?, start_time = ?, end_time = ?
-                 WHERE event_id = ? AND organizer_id = ?",
+                SET banner_id = ?, name = ?, description = ?, start_time = ?, end_time = ?
+                WHERE event_id = ? AND organizer_id = ?",
                 [
                     $banner_id,
                     $name,
@@ -132,8 +149,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $conn->execute_query(
                 "INSERT INTO events
-                 (organizer_id, banner_id, name, description, start_time, end_time)
-                 VALUES (?, ?, ?, ?, ?, ?)",
+                (organizer_id, banner_id, name, description, start_time, end_time)
+                VALUES (?, ?, ?, ?, ?, ?)",
                 [
                     $organizer_id,
                     $banner_id,
@@ -173,8 +190,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $conn->execute_query(
                 "UPDATE events
-                 SET banner_id = ?, name = ?, description = ?, start_time = ?, end_time = ?
-                 WHERE event_id = ? AND organizer_id = ?",
+                SET banner_id = ?, name = ?, description = ?, start_time = ?, end_time = ?
+                WHERE event_id = ? AND organizer_id = ?",
                 [
                     $banner_id,
                     $name,
@@ -192,8 +209,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $conn->execute_query(
                 "INSERT INTO events
-                 (organizer_id, banner_id, name, description, start_time, end_time)
-                 VALUES (?, ?, ?, ?, ?, ?)",
+                (organizer_id, banner_id, name, description, start_time, end_time)
+                VALUES (?, ?, ?, ?, ?, ?)",
                 [
                     $organizer_id,
                     $banner_id,
@@ -835,6 +852,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ><?php echo htmlspecialchars($description); ?></textarea>
 
                 </div>
+
+                <div class="form-group">
+                    <label for="banner">Banner image</label>
+
+                    <div class="banner-preview-wrap<?php echo ($edit_mode && $banner_id) ? ' show' : ''; ?>" id="bannerPreviewWrap">
+                        <img
+                            id="bannerPreviewImg"
+                            src="<?php echo ($edit_mode && $banner_id) ? htmlspecialchars(get_image_path($banner_id)) : ''; ?>"
+                            alt="Banner preview"
+                        >
+                        <button type="button" class="banner-remove-btn" id="bannerRemoveBtn">Remove Banner</button>
+                    </div>
+
+                    <input type="hidden" name="remove_banner" id="removeBannerField" value="">
+
+                    <div class="banner-upload" id="bannerUpload">
+                        <div class="banner-upload-icon">🖼️</div>
+                        <div class="banner-upload-text" id="bannerUploadText">Click or drag an image here to upload</div>
+                        <div class="banner-upload-hint">JPEG, PNG, GIF or WebP</div>
+                        <input id="banner" name="banner" type="file" accept="image/jpeg,image/png,image/gif,image/webp">
+                    </div>
+                </div>
+
+                <script>
+                (function () {
+                    var uploadBox = document.getElementById('bannerUpload');
+                    var fileInput = document.getElementById('banner');
+                    var previewWrap = document.getElementById('bannerPreviewWrap');
+                    var previewImg = document.getElementById('bannerPreviewImg');
+                    var uploadText = document.getElementById('bannerUploadText');
+                    var removeBtn = document.getElementById('bannerRemoveBtn');
+                    var removeField = document.getElementById('removeBannerField');
+
+                    function showPreview(file) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewImg.src = e.target.result;
+                            previewWrap.classList.add('show');
+                        };
+                        reader.readAsDataURL(file);
+                        uploadText.textContent = file.name;
+                        removeField.value = '';
+                    }
+
+                    fileInput.addEventListener('change', function () {
+                        if (fileInput.files && fileInput.files[0]) {
+                            showPreview(fileInput.files[0]);
+                        }
+                    });
+
+                    uploadBox.addEventListener('dragover', function (e) {
+                        e.preventDefault();
+                        uploadBox.classList.add('dragover');
+                    });
+
+                    uploadBox.addEventListener('dragleave', function () {
+                        uploadBox.classList.remove('dragover');
+                    });
+
+                    uploadBox.addEventListener('drop', function (e) {
+                        e.preventDefault();
+                        uploadBox.classList.remove('dragover');
+                        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                            fileInput.files = e.dataTransfer.files;
+                            showPreview(e.dataTransfer.files[0]);
+                        }
+                    });
+
+                    removeBtn.addEventListener('click', function () {
+                        fileInput.value = '';
+                        previewWrap.classList.remove('show');
+                        previewImg.src = '';
+                        uploadText.textContent = 'Click or drag an image here to upload';
+                        removeField.value = '1';
+                    });
+                })();
+                </script>
 
                 <div class="form-group">
 
