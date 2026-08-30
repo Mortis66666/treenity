@@ -651,5 +651,7 @@ foreach ($all_events as $ev) {
 
 </main>
 
+<?php include("footer.php"); ?>
+
 </body>
 </html>

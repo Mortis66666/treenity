@@ -21,11 +21,12 @@ $name = '';
 $description = '';
 $start_time = '';
 $end_time = '';
+$banner_id = null;
 
 if ($edit_mode) {
 
     $result = $conn->execute_query(
-        "SELECT event_id, name, description, start_time, end_time
+        "SELECT event_id, banner_id, name, description, start_time, end_time
          FROM events
          WHERE event_id = ? AND organizer_id = ?",
         [$event_id, $organizer_id]
@@ -42,6 +43,7 @@ if ($edit_mode) {
     $description = $event['description'] ?? '';
     $start_time = $event['start_time'] ?? '';
     $end_time = $event['end_time'] ?? '';
+    $banner_id = $event['banner_id'] ?? null;
 
     if ($start_time) {
         $start_time = date('Y-m-d\TH:i', strtotime($start_time));
@@ -58,17 +60,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description'] ?? '');
     $start_time = $_POST['start_time'] ?? '';
     $end_time = $_POST['end_time'] ?? '';
+    $banner_id = $edit_mode ? ($event['banner_id'] ?? null) : null;
     $action = $_POST['action'] ?? 'create';
+
+    if (isset($_FILES['banner']) && $_FILES['banner']['error'] !== UPLOAD_ERR_NO_FILE) {
+        if ($_FILES['banner']['error'] === UPLOAD_ERR_OK) {
+            $banner_id = create_image('banner', $_FILES['banner']);
+        } else {
+            $error = 'The banner upload failed.';
+        }
+    }
 
     if ($action === 'draft') {
 
-        if ($edit_mode) {
+        if ($error ?? null) {
+            // keep the same validation flow, but do not continue saving invalid uploads
+        } elseif ($edit_mode) {
 
             $conn->execute_query(
                 "UPDATE events
-                 SET name = ?, description = ?, start_time = ?, end_time = ?
+                 SET banner_id = ?, name = ?, description = ?, start_time = ?, end_time = ?
                  WHERE event_id = ? AND organizer_id = ?",
                 [
+                    $banner_id,
                     $name,
                     $description,
                     $start_time !== '' ? $start_time : null,
@@ -82,10 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $conn->execute_query(
                 "INSERT INTO events
-                 (organizer_id, name, description, start_time, end_time)
-                 VALUES (?, ?, ?, ?, ?)",
+                 (organizer_id, banner_id, name, description, start_time, end_time)
+                 VALUES (?, ?, ?, ?, ?, ?)",
                 [
                     $organizer_id,
+                    $banner_id,
                     $name,
                     $description,
                     $start_time !== '' ? $start_time : null,
@@ -120,9 +135,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $conn->execute_query(
                 "UPDATE events
-                 SET name = ?, description = ?, start_time = ?, end_time = ?
+                 SET banner_id = ?, name = ?, description = ?, start_time = ?, end_time = ?
                  WHERE event_id = ? AND organizer_id = ?",
                 [
+                    $banner_id,
                     $name,
                     $description,
                     $start_time,
@@ -136,10 +152,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $conn->execute_query(
                 "INSERT INTO events
-                 (organizer_id, name, description, start_time, end_time)
-                 VALUES (?, ?, ?, ?, ?)",
+                 (organizer_id, banner_id, name, description, start_time, end_time)
+                 VALUES (?, ?, ?, ?, ?, ?)",
                 [
                     $organizer_id,
+                    $banner_id,
                     $name,
                     $description,
                     $start_time,
@@ -555,7 +572,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="form-card">
 
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
 
                 <div class="form-group">
 
@@ -583,6 +600,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         name="description"
                     ><?php echo htmlspecialchars($description); ?></textarea>
 
+                </div>
+
+                <div class="form-group">
+                    <label for="banner">Banner image</label>
+                    <input id="banner" name="banner" type="file" accept="image/jpeg,image/png,image/gif,image/webp">
                 </div>
 
                 <div class="form-group">

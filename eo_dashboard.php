@@ -46,19 +46,25 @@ ORDER BY e.last_updated DESC
 LIMIT 5
 ", [$organizer_id]);
 $recent_events = $result->fetch_all(MYSQLI_ASSOC);
-
-include 'header.php';
 ?>
+<!DOCTYPE html>
+<html lang="en">
 
-<link rel="stylesheet" href="styles/global.css ">
+<head>
+    <meta charset="UTF-8">
+    <title>Organizer Dashboard - Treenity</title>
+    <?php include("global.php"); ?>
 <style>
+    * {
+        box-sizing: border-box;
+    }
+
     .eo-wrap {
         max-width: 1100px;
         margin: 30px auto;
         padding: 0 20px 60px;
         flex: 1;
         width: 100%;
-        box-sizing: border-box;
     }
 
     .page-title {
@@ -89,7 +95,7 @@ include 'header.php';
     }
 
     .stats-card .lbl {
-        font-size: 12px;
+        font-size: 13px;
         color: #6b6355;
         margin-top: 4px;
     }
@@ -100,13 +106,21 @@ include 'header.php';
         border-radius: 8px;
         padding: 22px;
         margin-bottom: 18px;
+        width: 100%;
     }
 
     .card-title {
         font-family: Georgia, 'Times New Roman', serif;
-        font-size: 18px;
+        font-size: 19px;
         color: #1b4332;
         margin-bottom: 16px;
+    }
+
+    /* Desktop/tablet table */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     table {
@@ -124,23 +138,80 @@ include 'header.php';
         text-transform: uppercase;
         letter-spacing: 0.04em;
         border-bottom: 2px solid #e0dacd;
+        white-space: nowrap;
     }
 
     td {
         padding: 10px;
         color: #33302a;
         border-bottom: 1px solid #eee6d8;
+        white-space: nowrap;
     }
 
     tr:last-child td {
         border-bottom: none;
     }
 
+    /* Mobile card list (hidden on desktop) */
+    .event-list-mobile {
+        display: none;
+    }
+
+    .event-item {
+        border: 1px solid #e0dacd;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+
+    .event-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .event-item-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .event-item-name {
+        font-weight: 700;
+        color: #1b4332;
+        font-size: 17px;
+        overflow-wrap: break-word;
+    }
+
+    .event-item-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #33302a;
+        padding: 6px 0;
+        border-top: 1px solid #eee6d8;
+    }
+
+    .event-item-row span:first-child {
+        color: #6b6355;
+    }
+
+    .event-item .btn-view {
+        display: block;
+        text-align: center;
+        margin-top: 12px;
+        padding: 12px;
+        border: 1px solid #e0dacd;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
     .badge {
-        font-size: 12px;
-        padding: 4px 10px;
+        font-size: 13px;
+        padding: 5px 12px;
         border-radius: 20px;
         font-weight: 600;
+        white-space: nowrap;
     }
 
     .badge-active {
@@ -180,9 +251,9 @@ include 'header.php';
         background: #1b4332;
         color: #fff;
         border: none;
-        padding: 10px 18px;
+        padding: 13px 20px;
         border-radius: 6px;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
         text-decoration: none;
@@ -197,9 +268,9 @@ include 'header.php';
         background: #f4f1ea;
         color: #1b4332;
         border: 1px solid #e0dacd;
-        padding: 10px 18px;
+        padding: 13px 20px;
         border-radius: 6px;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
         text-decoration: none;
@@ -210,21 +281,29 @@ include 'header.php';
         background: #ece7d9;
     }
 
+    /* Tablet */
     @media (max-width: 768px) {
-        .stats-grid {
-            grid-template-columns: 1fr 1fr;
+        .eo-wrap {
+            padding: 0 15px 40px;
+            margin: 20px auto;
         }
 
-        .quick-links {
-            flex-wrap: wrap;
+        .page-title {
+            font-size: 27px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .card {
+            padding: 18px;
         }
     }
 
-    @media (max-width: 480px) {
-        .stats-grid {
-            grid-template-columns: 1fr;
-        }
-
+    /* Mobile */
+    @media (max-width: 600px) {
         .quick-links {
             flex-direction: column;
         }
@@ -234,269 +313,43 @@ include 'header.php';
             text-align: center;
         }
 
+        .table-container {
+            display: none;
+        }
+
+        .event-list-mobile {
+            display: block;
+        }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 400px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
 
-    * {
-        box-sizing: border-box;
+        .stats-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+        }
+
+        .stats-card .val {
+            font-size: 26px;
+        }
+
+        .stats-card .lbl {
+            font-size: 13px;
+            margin-top: 0;
+        }
     }
-
-    html,
-    body {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-    .content,
-    .container,
-    .main-content {
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        padding: 20px 15px;
-    }
-
-    h1 {
-        font-size: 25px;
-        line-height: 1.3;
-        margin-bottom: 18px;
-    }
-
-    h2 {
-        font-size: 21px;
-    }
-
-    h3 {
-        font-size: 18px;
-    }
-
-    .card,
-    .form-card,
-    .event-card,
-    .panel,
-    .section-card {
-        width: 100%;
-        max-width: 100%;
-        margin-bottom: 15px;
-    }
-
-    input,
-    select,
-    textarea {
-        width: 100%;
-        max-width: 100%;
-        font-size: 16px;
-    }
-
-    textarea {
-        min-height: 110px;
-    }
-
-    button,
-    .btn,
-    .btn-primary,
-    .btn-secondary,
-    .btn-danger,
-    .btn-success {
-        min-height: 44px;
-        max-width: 100%;
-    }
-
-    .actions,
-    .button-group,
-    .form-actions {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        gap: 10px;
-    }
-
-    .actions button,
-    .actions a,
-    .button-group button,
-    .button-group a,
-    .form-actions button,
-    .form-actions a {
-        width: 100%;
-        text-align: center;
-    }
-
-    .grid,
-    .cards,
-    .event-grid,
-    .stats-grid,
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: 1fr !important;
-        gap: 15px;
-    }
-
-    .stats,
-    .statistics {
-        display: grid;
-        grid-template-columns: 1fr !important;
-        gap: 12px;
-    }
-
-    table {
-        width: 100%;
-        min-width: 650px;
-    }
-
-    .table-container,
-    .table-responsive,
-    .participants-table,
-    .responsive-table {
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .event-card img,
-    .card img,
-    .banner,
-    .event-image {
-        width: 100%;
-        height: auto;
-        max-width: 100%;
-        object-fit: cover;
-    }
-
-    .modal,
-    .modal-content {
-        width: calc(100% - 30px);
-        max-width: 100%;
-        margin: 15px auto;
-    }
-
-    .modal-body {
-        max-height: 80vh;
-        overflow-y: auto;
-    }
-
-    .search,
-    .search-box,
-    .filter,
-    .filter-box {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .search input,
-    .search-box input,
-    .filter select {
-        width: 100%;
-    }
-
-    .profile,
-    .participant-details,
-    .event-details,
-    .quest-details {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .row,
-    .form-row,
-    .detail-row {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        gap: 12px;
-    }
-
-    .col,
-    .form-col,
-    .detail-col {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .quest-card,
-    .participant-card {
-        width: 100%;
-        padding: 15px;
-    }
-
-    .quest-actions,
-    .participant-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        width: 100%;
-    }
-
-    .quest-actions button,
-    .quest-actions a,
-    .participant-actions button,
-    .participant-actions a {
-        width: 100%;
-    }
-
-    .alert,
-    .error-box,
-    .success-box {
-        width: 100%;
-        max-width: 100%;
-        overflow-wrap: break-word;
-    }
-}
-
-@media (max-width: 480px) {
-
-    .content,
-    .container,
-    .main-content {
-        padding: 15px 12px;
-    }
-
-    h1 {
-        font-size: 22px;
-    }
-
-    h2 {
-        font-size: 19px;
-    }
-
-    h3 {
-        font-size: 17px;
-    }
-
-    .card,
-    .form-card,
-    .event-card,
-    .panel,
-    .section-card {
-        padding: 15px;
-        border-radius: 8px;
-    }
-
-    input,
-    select,
-    textarea {
-        padding: 11px;
-    }
-
-    button,
-    .btn,
-    .btn-primary,
-    .btn-secondary {
-        width: 100%;
-    }
-
-    table {
-        font-size: 13px;
-    }
-
-    th,
-    td {
-        padding: 8px;
-        white-space: nowrap;
-    }
-}
 </style>
+</head>
+
+<body>
+    <?php include("header.php"); ?>
+
+    <main class="content">
 
 <div class="eo-wrap">
     <div class="page-title">Organizer Dashboard</div>
@@ -566,8 +419,45 @@ include 'header.php';
                 </tbody>
                 </table>
             </div>
+
+            <div class="event-list-mobile">
+                <?php foreach ($recent_events as $event):
+                    $now = new DateTime();
+                    $start = new DateTime($event['start_time']);
+                    $end = new DateTime($event['end_time']);
+                    if ($now < $start) $status = 'Upcoming';
+                    elseif ($now > $end) $status = 'Ended';
+                    else $status = 'Active';
+                    $badge = $status === 'Active' ? 'badge-active' : ($status === 'Ended' ? 'badge-ended' : 'badge-upcoming');
+                ?>
+                    <div class="event-item">
+                        <div class="event-item-top">
+                            <div class="event-item-name"><?= htmlspecialchars($event['name']) ?></div>
+                            <span class="badge <?= $badge ?>"><?= $status ?></span>
+                        </div>
+                        <div class="event-item-row">
+                            <span>Start</span>
+                            <span><?= htmlspecialchars($event['start_time']) ?></span>
+                        </div>
+                        <div class="event-item-row">
+                            <span>End</span>
+                            <span><?= htmlspecialchars($event['end_time']) ?></span>
+                        </div>
+                        <div class="event-item-row">
+                            <span>Participants</span>
+                            <span><?= htmlspecialchars($event['participant_count']) ?></span>
+                        </div>
+                        <a href="eo_participants.php?event_id=<?= $event['event_id'] ?>" class="btn-view">View Participants</a>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
     </div>
 </div>
 
-<?php include 'footer.php'; ?>
+    </main>
+
+    <?php include("footer.php"); ?>
+</body>
+
+</html>
